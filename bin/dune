@@ -1,4 +1,4 @@
 (executable
  (public_name CheckCamelMate)
  (name main)
- (libraries CheckCamelMate))
+ (libraries Game Board Piece))
