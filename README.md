@@ -1,4 +1,8 @@
-# CS 3110 Final Project
+# CS 3110 Final Project - CheckCamelMate
+
+<p align="center">
+  <img src="assets/camel-chess-image.jpg" width=50% style="border-radius: 5%">
+</p>
 
 ## Members
 
