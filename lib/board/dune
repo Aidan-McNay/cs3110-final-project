@@ -1,6 +1,7 @@
 (library
  (inline_tests)
  (name Board)
+ (libraries Utils Piece)
  (preprocess
   (pps ppx_inline_test))
  (instrumentation
