@@ -10,20 +10,25 @@ val get_points : t -> Piece.Pieces.color -> int
 (** [get_points board color] gets the points of pieces that the [color] player
     has captured on [board]. *)
 
-val move_piece : t -> Utils.Location.t -> Utils.Location.t -> t
-(** [move_piece board start finish] is [board] after moving the piece at [start]
-    to [finish], capturing a piece on [finish] if necessary. *)
-
-val in_check : t -> Piece.Pieces.color -> bool
-(** [in_check board color] is whether the player with [color] pieces is in check
-    on the current board. *)
+exception Invalid_move
+(** Raised if the user attempts an invalid move. *)
 
 type move_record = {
   piece : Piece.Pieces.t;
   start : Utils.Location.t;
   finish : Utils.Location.t;
   is_check : bool;
+  captured_a_piece : bool;
 }
+
+val move_piece : t -> Utils.Location.t -> Utils.Location.t -> t * move_record
+(** [move_piece board start finish] is [board] after moving the piece at [start]
+    to [finish], capturing a piece on [finish] if necessary, as well as a record
+    of the move. Raises: [Invalid_move] if the move isn't a valid one. *)
+
+val in_check : t -> Piece.Pieces.color -> bool
+(** [in_check board color] is whether the player with [color] pieces is in check
+    on the current board. *)
 
 exception No_moves_made
 (** Raised if no moves have been made. *)

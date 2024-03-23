@@ -5,6 +5,7 @@ type move_record = {
   start : Utils.Location.t;
   finish : Utils.Location.t;
   is_check : bool;
+  captured_a_piece : bool;
 }
 
 type t = {
@@ -80,6 +81,8 @@ let get_points board color =
   match color with
   | Piece.Types.White -> get_piece_points board.captured_by_white
   | Piece.Types.Black -> get_piece_points board.captured_by_black
+
+exception Invalid_move
 
 let move_piece = failwith "Unimplemented"
 let in_check = failwith "Unimplemented"
