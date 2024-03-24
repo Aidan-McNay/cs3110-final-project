@@ -19,7 +19,7 @@ type piece_presence = {
   location : Utils.Location.t;
 }
 
-let is_piece_present presence_list location =
+let color_present presence_list location =
   match
     List.find_opt (fun presence -> presence.location = location) presence_list
   with
@@ -27,7 +27,7 @@ let is_piece_present presence_list location =
   | None -> None
 
 type valid_moves =
-  Utils.Location.t -> piece_presence list -> Utils.Move.moves list
+  Utils.Location.t -> color -> piece_presence list -> Utils.Move.moves list
 
 type piece_metadata = {
   points : int;
