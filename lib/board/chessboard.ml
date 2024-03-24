@@ -14,8 +14,6 @@ type t = {
   captured_by_black : Piece.Pieces.t list;
   moves : move_record list;
 }
-[@@warning "-69"]
-(* Usused currently *)
 
 (* AF: The record [{pieces_on_board = p; captured_by_white = w;
    captured_by_black = b; moves = m}] represents a chess board with the pieces
@@ -84,7 +82,82 @@ let get_points board color =
 
 exception Invalid_move
 
-let move_piece = failwith "Unimplemented"
+(** [move_piece_list piece_list start finish] is [piece_list] with the piece at
+    [start] moved to [finish]. *)
+let move_piece_list piece_list start finish =
+  List.map
+    (fun piece ->
+      if Piece.Pieces.get_loc piece = start then
+        Piece.Pieces.set_loc piece finish
+      else piece)
+    piece_list
+
+(** [piece_at_loc piece_list loc] is the piece in [piece_list] at [loc], if any. *)
+let piece_at_loc piece_list loc =
+  let piece_at_loc piece = Piece.Pieces.get_loc piece = loc in
+  List.find_opt piece_at_loc piece_list
+
+(** [capture_piece board loc] is [board] with the piece at [loc] captured.
+    Evaluates to [board] if there is no piece at [loc]. *)
+let capture_piece board loc =
+  match piece_at_loc board.pieces_on_board loc with
+  | Some piece ->
+      let captured_by_white, captured_by_black =
+        match Piece.Pieces.get_color piece with
+        | Piece.Types.Black ->
+            (piece :: board.captured_by_white, board.captured_by_black)
+        | Piece.Types.White ->
+            (board.captured_by_white, piece :: board.captured_by_black)
+      in
+      let new_pieces_on_board =
+        List.filter
+          (fun piece -> Piece.Pieces.get_loc piece <> loc)
+          board.pieces_on_board
+      in
+      {
+        pieces_on_board = new_pieces_on_board;
+        captured_by_white;
+        captured_by_black;
+        moves = board.moves;
+      }
+  | None -> board
+
+(** [is_valid_move board piece new_loc] is whether moving [piece] to [new_loc]
+    on [board] is a valid move. *)
+let is_valid_move board piece new_loc =
+  let curr_loc = Piece.Pieces.get_loc piece in
+  let valid_moves = Piece.Pieces.get_valid_moves piece board.pieces_on_board in
+  List.exists
+    (fun moves -> Utils.Location.apply_moves curr_loc moves = new_loc)
+    valid_moves
+
+let move_piece board start finish =
+  match piece_at_loc board.pieces_on_board start with
+  | None -> raise Invalid_move
+  | Some piece ->
+      if Bool.not (is_valid_move board piece finish) then raise Invalid_move
+      else
+        let captured_board = capture_piece board finish in
+        let pieces_on_board =
+          move_piece_list board.pieces_on_board start finish
+        in
+        let new_move_record =
+          {
+            piece;
+            start;
+            finish;
+            is_check = false;
+            captured_a_piece = captured_board <> board;
+          }
+        in
+        ( {
+            pieces_on_board;
+            captured_by_white = captured_board.captured_by_white;
+            captured_by_black = captured_board.captured_by_black;
+            moves = new_move_record :: captured_board.moves;
+          },
+          new_move_record )
+
 let in_check = failwith "Unimplemented"
 
 exception No_moves_made

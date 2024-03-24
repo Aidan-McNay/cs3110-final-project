@@ -22,6 +22,9 @@ val get_color : t -> color
 val get_loc : t -> Utils.Location.t
 (** [get_loc piece] is the location of [piece]. *)
 
+val set_loc : t -> Utils.Location.t -> t
+(** [set_loc piece loc] is [piece] at [loc]. *)
+
 val get_points : t -> int
 (** [get_points piece] is the number of points that [piece] is worth. *)
 
