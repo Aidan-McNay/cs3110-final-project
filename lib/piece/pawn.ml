@@ -29,11 +29,8 @@ let add_capture_move loc color presence_list dir moves_list =
     in
     let new_loc = Utils.Location.apply_moves loc prospective_moves in
     match Types.color_present presence_list new_loc with
-    | Some Types.White ->
-        if color = Types.Black then prospective_moves :: moves_list
-        else moves_list
-    | Some Types.Black ->
-        if color = Types.White then prospective_moves :: moves_list
+    | Some target_color ->
+        if color <> target_color then prospective_moves :: moves_list
         else moves_list
     | None -> moves_list
   with Utils.Location.Off_board -> moves_list

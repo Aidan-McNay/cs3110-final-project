@@ -1,16 +1,16 @@
 (* @author Aidan McNay (acm289) *)
 
-let knight_moves : Utils.Move.moves list =
+let king_moves : Utils.Move.moves list =
   Utils.Move.
     [
-      [ Up; Up; Left ];
-      [ Up; Up; Right ];
-      [ Down; Down; Left ];
-      [ Down; Down; Right ];
-      [ Left; Left; Up ];
-      [ Left; Left; Down ];
-      [ Right; Right; Up ];
-      [ Right; Right; Down ];
+      [ Up ];
+      [ Down ];
+      [ Left ];
+      [ Right ];
+      [ Up; Right ];
+      [ Up; Left ];
+      [ Down; Right ];
+      [ Down; Left ];
     ]
 
 let valid_move piece_color curr_loc presence_list moves =
@@ -22,9 +22,9 @@ let valid_move piece_color curr_loc presence_list moves =
     | None -> Some moves
   with Utils.Location.Off_board -> None
 
-let knight_valid_moves loc color presence_list =
+let king_valid_moves loc color presence_list =
   let is_valid_move = valid_move color loc presence_list in
-  List.filter_map is_valid_move knight_moves
+  List.filter_map is_valid_move king_moves
 
 let metadata : Types.piece_metadata =
-  { points = 3; get_valid_moves = knight_valid_moves }
+  { points = 200; get_valid_moves = king_valid_moves }

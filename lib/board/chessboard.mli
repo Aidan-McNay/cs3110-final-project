@@ -40,3 +40,6 @@ val last_move : t -> move_record
 val move_history : t -> move_record list
 (** [move_history board] is the complete move history of [board]. The most
     recent move is at the front of the list. *)
+
+val string_rep : t -> string
+(** [string_rep board] is the string representation of [board]. *)

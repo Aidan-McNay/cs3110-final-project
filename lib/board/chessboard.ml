@@ -95,3 +95,4 @@ let last_move board =
   | h :: _ -> h
 
 let move_history board = board.moves
+let string_rep = failwith "Unimplemented"

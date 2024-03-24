@@ -24,6 +24,18 @@ val color_present : piece_presence list -> Utils.Location.t -> color option
 (** [color_present presence_list location] is the color of the piece in
     [presence_list] at [location], if any. *)
 
+val get_dir_moves :
+  Utils.Location.t ->
+  color ->
+  piece_presence list ->
+  Utils.Move.moves ->
+  Utils.Move.moves list ->
+  Utils.Move.moves list
+(** [get_dir_moves loc color presence_list dir moves_list] adds to [move_list]
+    all moves that a piece of color [color] at [loc] can take in [dir]
+    direction, given the pieces in [presence_list] and assuming that the piece
+    can take pieces of the other color. *)
+
 type valid_moves =
   Utils.Location.t -> color -> piece_presence list -> Utils.Move.moves list
 (** The type of a function that gets a piece's valid moves.
