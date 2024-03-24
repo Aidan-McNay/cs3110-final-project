@@ -20,8 +20,15 @@ type piece_presence = {
 }
 (** A type representing the presence of a piece at a location. *)
 
-type valid_moves = piece_presence list -> Utils.Move.moves list
-(** The type of a function that gets a piece's valid moves *)
+val is_piece_present : piece_presence list -> Utils.Location.t -> color option
+(** [is_piece_present presence_list location] is the color of the piece in
+    [presence_list] at [location], if any. *)
+
+type valid_moves =
+  Utils.Location.t -> piece_presence list -> Utils.Move.moves list
+(** The type of a function that gets a piece's valid moves.
+    [valid_moves loc presence_list] is all of the valid moves that a piece at
+    [loc] can take, given pieces at [presence_list]. *)
 
 type piece_metadata = {
   points : int;
