@@ -16,6 +16,7 @@ let init piece_type color location =
   let metadata =
     match piece_type with
     | Types.Pawn -> Pawn.metadata
+    | Types.Knight -> Knight.metadata
     | _ -> failwith "Unimplemented"
   in
   { color; piece_type; location; metadata }

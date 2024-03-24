@@ -39,5 +39,4 @@ val last_move : t -> move_record
 
 val move_history : t -> move_record list
 (** [move_history board] is the complete move history of [board]. The most
-    recent move is at the front of the least. Raises: [No_moves_made] if no
-    moves have been made. *)
+    recent move is at the front of the list. *)

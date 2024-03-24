@@ -89,5 +89,9 @@ let in_check = failwith "Unimplemented"
 
 exception No_moves_made
 
-let last_move = failwith "Unimplemented"
-let move_history = failwith "Unimplemented"
+let last_move board =
+  match board.moves with
+  | [] -> raise No_moves_made
+  | h :: _ -> h
+
+let move_history board = board.moves
