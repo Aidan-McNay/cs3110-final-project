@@ -31,3 +31,6 @@ val get_points : t -> int
 val get_valid_moves : t -> t list -> Utils.Move.moves list
 (** [get_valid_moves piece state] is the valid moves that [piece] can take,
     given a board state of [state]. *)
+
+val to_string : t -> string
+(** [to_string piece] is the string representation of [piece]. *)

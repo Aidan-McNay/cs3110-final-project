@@ -42,3 +42,30 @@ let map_to_presences piece_list = List.map piece_to_presence piece_list
 let get_valid_moves piece piece_list =
   let presence_list = map_to_presences piece_list in
   piece.metadata.get_valid_moves piece.location piece.color presence_list
+
+(** [to_string_black piece] is the string representation of [piece], assuming
+    that the piece is Black. *)
+let to_string_black piece =
+  match piece.piece_type with
+  | Types.Pawn -> "\u{265F}"
+  | Types.Knight -> "\u{265E}"
+  | Types.Bishop -> "\u{265D}"
+  | Types.Rook -> "\u{265C}"
+  | Types.Queen -> "\u{265B}"
+  | Types.King -> "\u{265A}"
+
+(** [to_string_white piece] is the string representation of [piece], assuming
+    that the piece is White. *)
+let to_string_white piece =
+  match piece.piece_type with
+  | Types.Pawn -> "\u{2659}"
+  | Types.Knight -> "\u{2658}"
+  | Types.Bishop -> "\u{2657}"
+  | Types.Rook -> "\u{2656}"
+  | Types.Queen -> "\u{2655}"
+  | Types.King -> "\u{2654}"
+
+let to_string piece =
+  match piece.color with
+  | Types.Black -> to_string_black piece
+  | Types.White -> to_string_white piece
