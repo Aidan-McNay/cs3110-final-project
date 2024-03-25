@@ -27,3 +27,6 @@ val apply_moves : t -> Move.moves -> t
 (** [apply_moves loc moves] is the location moved by [moves], in order. Raises:
     [Off_board] if any of the intermediate locations are off the board (defined
     by columns A-H and rows 1-8). *)
+
+val str_of_loc : t -> string
+(** [str_of_loc loc] is the string representation of [loc]. *)

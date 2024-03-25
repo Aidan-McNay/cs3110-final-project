@@ -45,6 +45,10 @@ module type PieceTestInputs = sig
   val empty_color : Piece.Types.color
   (** [empty_color] is the color of the piece we're testing on [empty]. *)
 
+  val empty_str_rep : string
+  (** [empty_str_rep] is the string representation of the piece we're testing on
+      [empty]. *)
+
   val empty_possible_moves : Utils.Move.moves list
   (** [empty_possible_moves] is the possible moves the piece should have from
       [empty_location] on [empty]. *)
@@ -55,22 +59,22 @@ module type PieceTestInputs = sig
   val board1_color : Piece.Types.color
   (** [board1_color] is the color of the piece we're testing on [board1]. *)
 
+  val board1_str_rep : string
+  (** [empty_str_rep] is the string representation of the piece we're testing on
+      [empty]. *)
+
   val board1_possible_moves : Utils.Move.moves list
   (** [board1_possible_moves] is the possible moves the piece should have from
       [board1_location] on [board1]. *)
 end
 
-(** [assert_contents_equal lst1 lst2] is an assertion function for OUnit to
-    check whether [lst1] and [lst2] have the same contents, even if in a
-    different order. *)
-let assert_move_contents_equal lst1 lst2 _ =
+(** [move_contents_equal lst1 lst2] is whether [lst1] and [lst2] have the same
+    contents, even if in a different order. *)
+let move_contents_equal lst1 lst2 =
   let lst1_elements_in_lst2 lst1 lst2 =
-    List.iter
-      (fun el -> assert_equal (List.exists (fun x -> x = el) lst2) true)
-      lst1
+    List.for_all (fun el -> List.exists (fun x -> x = el) lst2) lst1
   in
-  lst1_elements_in_lst2 lst1 lst2;
-  lst1_elements_in_lst2 lst2 lst1
+  lst1_elements_in_lst2 lst1 lst2 && lst1_elements_in_lst2 lst2 lst1
 
 (** [moves_list_printer moves_list] is the string representation of
     [moves_list]. *)
@@ -88,29 +92,46 @@ module PieceTester (Inputs : PieceTestInputs) = struct
   let board1_piece =
     Inputs.(Piece.Pieces.init piece_type board1_color board1_location)
 
-  let basic_check piece color location _ =
-    assert_equal Inputs.piece_type (Piece.Pieces.get_type piece);
-    assert_equal color (Piece.Pieces.get_color piece);
-    assert_equal location (Piece.Pieces.get_loc piece);
-    assert_equal Inputs.points (Piece.Pieces.get_points piece);
+  let basic_check piece color location str_rep _ =
+    assert_equal Inputs.piece_type
+      (Piece.Pieces.get_type piece)
+      ~printer:Piece.Types.str_of_type;
+    assert_equal color
+      (Piece.Pieces.get_color piece)
+      ~printer:Piece.Types.str_of_color;
+    assert_equal location
+      (Piece.Pieces.get_loc piece)
+      ~printer:Utils.Location.str_of_loc;
+    assert_equal Inputs.points
+      (Piece.Pieces.get_points piece)
+      ~printer:string_of_int;
+    assert_equal str_rep (Piece.Pieces.to_string piece) ~printer:Fun.id;
     let loc1 = Utils.Location.init_loc 'B' 8 in
     let loc2 = Utils.Location.init_loc 'G' 3 in
-    assert_equal loc1 (Piece.Pieces.get_loc (Piece.Pieces.set_loc piece loc1));
-    assert_equal loc2 (Piece.Pieces.get_loc (Piece.Pieces.set_loc piece loc2))
+    assert_equal loc1
+      (Piece.Pieces.get_loc (Piece.Pieces.set_loc piece loc1))
+      ~printer:Utils.Location.str_of_loc;
+    assert_equal loc2
+      (Piece.Pieces.get_loc (Piece.Pieces.set_loc piece loc2))
+      ~printer:Utils.Location.str_of_loc
 
   let basic_empty_check =
     basic_check empty_board_piece Inputs.empty_color Inputs.empty_location
+      Inputs.empty_str_rep
 
   let basic_board1_check =
     basic_check board1_piece Inputs.board1_color Inputs.board1_location
+      Inputs.board1_str_rep
 
-  let empty_moves_check =
-    assert_move_contents_equal Inputs.empty_possible_moves
-      (Piece.Pieces.get_valid_moves board1_piece empty_board)
+  let empty_moves_check _ =
+    assert_equal Inputs.empty_possible_moves
+      (Piece.Pieces.get_valid_moves empty_board_piece empty_board)
+      ~cmp:move_contents_equal ~printer:moves_list_printer
 
-  let board1_moves_check =
-    assert_move_contents_equal Inputs.board1_possible_moves
+  let board1_moves_check _ =
+    assert_equal Inputs.board1_possible_moves
       (Piece.Pieces.get_valid_moves board1_piece board1)
+      ~cmp:move_contents_equal ~printer:moves_list_printer
 
   let tests =
     [

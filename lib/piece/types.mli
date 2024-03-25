@@ -5,6 +5,9 @@ type color =
   | White
   | Black
 
+val str_of_color : color -> string
+(** [str_of_color color] is the string representation of [color]. *)
+
 (** The different kinds of piece that a chess piece can be *)
 type piece_type =
   | Pawn
@@ -13,6 +16,9 @@ type piece_type =
   | Rook
   | Queen
   | King
+
+val str_of_type : piece_type -> string
+(** [str_of_type piece_type] is the string representation of [piece_type]. *)
 
 type piece_presence = {
   color : color;

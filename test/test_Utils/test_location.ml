@@ -3,10 +3,14 @@ open OUnit2
 (** [assert_loc loc col row] asserts that location [loc] has the column [col]
     and row [row]. *)
 let assert_loc loc col row =
-  assert_equal (Char.uppercase_ascii col)
+  let uppercase_col = Char.uppercase_ascii col in
+  assert_equal uppercase_col
     (Utils.Location.get_col loc)
     ~printer:(String.make 1);
-  assert_equal row (Utils.Location.get_row loc) ~printer:string_of_int
+  assert_equal row (Utils.Location.get_row loc) ~printer:string_of_int;
+  assert_equal
+    (String.make 1 uppercase_col ^ string_of_int row)
+    (Utils.Location.str_of_loc loc)
 
 (** [basic_test col row] runs basic tests on a location with column [col] and
     row [row]. *)

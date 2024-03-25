@@ -41,3 +41,4 @@ let apply_move { column = c; row = r } move =
   | Move.Right -> on_board { column = c + 1; row = r }
 
 let apply_moves loc moves = List.fold_left apply_move loc moves
+let str_of_loc loc = String.make 1 (get_col loc) ^ string_of_int (get_row loc)

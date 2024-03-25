@@ -5,6 +5,10 @@ type color =
   | White
   | Black
 
+let str_of_color = function
+  | White -> "White"
+  | Black -> "Black"
+
 (** The different kinds of piece that a chess piece can be *)
 type piece_type =
   | Pawn
@@ -13,6 +17,14 @@ type piece_type =
   | Rook
   | Queen
   | King
+
+let str_of_type = function
+  | Pawn -> "Pawn"
+  | Knight -> "Knight"
+  | Bishop -> "Bishop"
+  | Rook -> "Rook"
+  | Queen -> "Queen"
+  | King -> "King"
 
 type piece_presence = {
   color : color;
