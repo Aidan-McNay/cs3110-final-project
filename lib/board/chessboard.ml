@@ -158,7 +158,10 @@ let move_piece board start finish =
           },
           new_move_record )
 
-let in_check = failwith "Unimplemented"
+let in_check board color =
+  ignore board;
+  ignore color;
+  failwith "Unimplemented"
 
 exception No_moves_made
 
@@ -168,4 +171,7 @@ let last_move board =
   | h :: _ -> h
 
 let move_history board = board.moves
-let string_rep = failwith "Unimplemented"
+
+let string_rep board =
+  ignore board;
+  failwith "Unimplemented"
