@@ -172,6 +172,34 @@ let last_move board =
 
 let move_history board = board.moves
 
+(** [loc_rep board loc] is the string representation of the location [loc] on
+    [board]. *)
+let loc_rep board loc =
+  match
+    List.find_opt
+      (fun piece -> Piece.Pieces.get_loc piece = loc)
+      board.pieces_on_board
+  with
+  | Some piece -> Piece.Pieces.to_string piece
+  | None -> " "
+
+(** [columns] is the list of columns on a chess board, in order of printing. *)
+let columns = [ 'A'; 'B'; 'C'; 'D'; 'E'; 'F'; 'G'; 'H' ]
+
+(** [row_rep board row] is the string representation of row [row] in [board]. *)
+let row_rep board row =
+  let get_loc_rep = loc_rep board in
+  let loc_reps =
+    List.map (fun col -> get_loc_rep (Utils.Location.init_loc col row)) columns
+  in
+  string_of_int row ^ " | " ^ String.concat " | " loc_reps ^ " |"
+
+(** [rows] is the list of rows on a chess board, in order of printing. *)
+let rows = [ 8; 7; 6; 5; 4; 3; 2; 1 ]
+
 let string_rep board =
-  ignore board;
-  failwith "Unimplemented"
+  let get_row_rep = row_rep board in
+  let row_reps = List.map get_row_rep rows in
+  "  ,-------------------------------.\n"
+  ^ String.concat "\n  |---+---+---+---+---+---+---+---|\n" row_reps
+  ^ "\n  `-------------------------------'\n    A   B   C   D   E   F   G   H "
