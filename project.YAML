@@ -1,0 +1,27 @@
+---
+group:
+  - name: Aidan McNay
+    netid: acm289
+  - name: Andro Janashia
+    netid: aj454
+  - name: Henry Toll
+    netid: hht26
+
+pm:
+  name: Noam Benson-Tilsen
+  netid: nb498
+
+publish: true
+
+title: "CheckCamelMate"
+
+git-repo: "https://github.com/Aidan-McNay/cs3110-final-project"
+
+demo-video-url: ""
+
+desc: >
+  Our project is the classic game of chess implemented using OCaml. 
+  It allows players to move and capture pieces just like in a standard
+  game of chess. Our program keeps track of all the moves the players make.
+
+  Standard visual I/O is supported.
