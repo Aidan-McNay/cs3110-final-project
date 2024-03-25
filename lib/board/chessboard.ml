@@ -97,8 +97,9 @@ let piece_at_loc piece_list loc =
   let piece_at_loc piece = Piece.Pieces.get_loc piece = loc in
   List.find_opt piece_at_loc piece_list
 
-(** [capture_piece board loc] is [board] with the piece at [loc] captured.
-    Evaluates to [board] if there is no piece at [loc]. *)
+(** [capture_piece board loc] is [board] with the piece at [loc] captured, as
+    well as whether a piece was captured. Evaluates to [board, false] if there
+    is no piece at [loc]. *)
 let capture_piece board loc =
   match piece_at_loc board.pieces_on_board loc with
   | Some piece ->
@@ -114,13 +115,14 @@ let capture_piece board loc =
           (fun piece -> Piece.Pieces.get_loc piece <> loc)
           board.pieces_on_board
       in
-      {
-        pieces_on_board = new_pieces_on_board;
-        captured_by_white;
-        captured_by_black;
-        moves = board.moves;
-      }
-  | None -> board
+      ( {
+          pieces_on_board = new_pieces_on_board;
+          captured_by_white;
+          captured_by_black;
+          moves = board.moves;
+        },
+        true )
+  | None -> (board, false)
 
 (** [is_valid_move board piece new_loc] is whether moving [piece] to [new_loc]
     on [board] is a valid move. *)
@@ -137,18 +139,12 @@ let move_piece board start finish =
   | Some piece ->
       if Bool.not (is_valid_move board piece finish) then raise Invalid_move
       else
-        let captured_board = capture_piece board finish in
+        let captured_board, captured_a_piece = capture_piece board finish in
         let pieces_on_board =
           move_piece_list board.pieces_on_board start finish
         in
         let new_move_record =
-          {
-            piece;
-            start;
-            finish;
-            is_check = false;
-            captured_a_piece = captured_board <> board;
-          }
+          { piece; start; finish; is_check = false; captured_a_piece }
         in
         ( {
             pieces_on_board;
