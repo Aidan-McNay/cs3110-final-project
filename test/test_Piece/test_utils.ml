@@ -56,11 +56,21 @@ module type PieceTestInputs = sig
       [location] on [board]. *)
 end
 
+(** [moves_equal move1 move2] is whether [move1] and [move2] represent the same
+    move, even if in a different order. *)
+let moves_equal moves1 moves2 =
+  let moves1_moves_in_moves2 lst1 lst2 =
+    List.for_all (fun el -> List.exists (fun x -> x = el) lst2) lst1
+  in
+  moves1_moves_in_moves2 moves1 moves2 && moves1_moves_in_moves2 moves2 moves1
+
 (** [move_contents_equal lst1 lst2] is whether [lst1] and [lst2] have the same
     contents, even if in a different order. *)
 let move_contents_equal lst1 lst2 =
   let lst1_elements_in_lst2 lst1 lst2 =
-    List.for_all (fun el -> List.exists (fun x -> x = el) lst2) lst1
+    List.for_all
+      (fun moves1 -> List.exists (fun moves2 -> moves_equal moves1 moves2) lst2)
+      lst1
   in
   lst1_elements_in_lst2 lst1 lst2 && lst1_elements_in_lst2 lst2 lst1
 
