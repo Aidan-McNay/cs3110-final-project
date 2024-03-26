@@ -39,33 +39,21 @@ module type PieceTestInputs = sig
   val points : int
   (** [points] is the expected number of points the piece should have. *)
 
-  val empty_location : Utils.Location.t
-  (** [empty_location] is the location we're testing on [empty]. *)
+  val location : Utils.Location.t
+  (** [location] is the location we're testing. *)
 
-  val empty_color : Piece.Types.color
-  (** [empty_color] is the color of the piece we're testing on [empty]. *)
+  val color : Piece.Types.color
+  (** [color] is the color of the piece we're testing. *)
 
-  val empty_str_rep : string
-  (** [empty_str_rep] is the string representation of the piece we're testing on
-      [empty]. *)
+  val str_rep : string
+  (** [str_rep] is the string representation of the piece we're testing *)
 
-  val empty_possible_moves : Utils.Move.moves list
-  (** [empty_possible_moves] is the possible moves the piece should have from
-      [empty_location] on [empty]. *)
+  val board : Piece.Pieces.t list
+  (** [board] is the other pieces on the board, besides the piece we're testing. *)
 
-  val board1_location : Utils.Location.t
-  (** [board1_location] is the location we're testing on [board1]. *)
-
-  val board1_color : Piece.Types.color
-  (** [board1_color] is the color of the piece we're testing on [board1]. *)
-
-  val board1_str_rep : string
-  (** [empty_str_rep] is the string representation of the piece we're testing on
-      [empty]. *)
-
-  val board1_possible_moves : Utils.Move.moves list
-  (** [board1_possible_moves] is the possible moves the piece should have from
-      [board1_location] on [board1]. *)
+  val possible_moves : Utils.Move.moves list
+  (** [possible_moves] is the possible moves the piece should have from
+      [location] on [board]. *)
 end
 
 (** [move_contents_equal lst1 lst2] is whether [lst1] and [lst2] have the same
@@ -86,26 +74,22 @@ let moves_list_printer moves_list =
 (** A functor for testing a piece, based on test inputs of type
     [PieceTestInputs]. *)
 module PieceTester (Inputs : PieceTestInputs) = struct
-  let empty_board_piece =
-    Inputs.(Piece.Pieces.init piece_type empty_color empty_location)
+  let piece = Inputs.(Piece.Pieces.init piece_type color location)
 
-  let board1_piece =
-    Inputs.(Piece.Pieces.init piece_type board1_color board1_location)
-
-  let basic_check piece color location str_rep _ =
+  let basic_check _ =
     assert_equal Inputs.piece_type
       (Piece.Pieces.get_type piece)
       ~printer:Piece.Types.str_of_type;
-    assert_equal color
+    assert_equal Inputs.color
       (Piece.Pieces.get_color piece)
       ~printer:Piece.Types.str_of_color;
-    assert_equal location
+    assert_equal Inputs.location
       (Piece.Pieces.get_loc piece)
       ~printer:Utils.Location.str_of_loc;
     assert_equal Inputs.points
       (Piece.Pieces.get_points piece)
       ~printer:string_of_int;
-    assert_equal str_rep (Piece.Pieces.to_string piece) ~printer:Fun.id;
+    assert_equal Inputs.str_rep (Piece.Pieces.to_string piece) ~printer:Fun.id;
     let loc1 = Utils.Location.init_loc 'B' 8 in
     let loc2 = Utils.Location.init_loc 'G' 3 in
     assert_equal loc1
@@ -115,29 +99,10 @@ module PieceTester (Inputs : PieceTestInputs) = struct
       (Piece.Pieces.get_loc (Piece.Pieces.set_loc piece loc2))
       ~printer:Utils.Location.str_of_loc
 
-  let basic_empty_check =
-    basic_check empty_board_piece Inputs.empty_color Inputs.empty_location
-      Inputs.empty_str_rep
-
-  let basic_board1_check =
-    basic_check board1_piece Inputs.board1_color Inputs.board1_location
-      Inputs.board1_str_rep
-
-  let empty_moves_check _ =
-    assert_equal Inputs.empty_possible_moves
-      (Piece.Pieces.get_valid_moves empty_board_piece empty_board)
+  let moves_check _ =
+    assert_equal Inputs.possible_moves
+      (Piece.Pieces.get_valid_moves piece Inputs.board)
       ~cmp:move_contents_equal ~printer:moves_list_printer
 
-  let board1_moves_check _ =
-    assert_equal Inputs.board1_possible_moves
-      (Piece.Pieces.get_valid_moves board1_piece board1)
-      ~cmp:move_contents_equal ~printer:moves_list_printer
-
-  let tests =
-    [
-      "basic_empty_check" >:: basic_empty_check;
-      "basic_board1_check" >:: basic_board1_check;
-      "empty_board_moves_check" >:: empty_moves_check;
-      "board1_moves_check" >:: board1_moves_check;
-    ]
+  let tests = [ "basic_check" >:: basic_check; "moves_check" >:: moves_check ]
 end

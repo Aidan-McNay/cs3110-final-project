@@ -41,25 +41,23 @@ let add_capture_move loc color presence_list dir moves_list =
     [moves_list] if the pawn has moved already ([loc] isn't a starting
     location). *)
 let add_double_move loc color presence_list moves_list =
-  try
-    let starting_row, prospective_moves =
-      match color with
-      | Types.White -> (2, [ Utils.Move.Up; Utils.Move.Up ])
-      | Types.Black -> (7, [ Utils.Move.Down; Utils.Move.Down ])
-    in
-    if Utils.Location.get_row loc <> starting_row then moves_list
-    else
-      let new_loc = Utils.Location.apply_moves loc prospective_moves in
-      match Types.color_present presence_list new_loc with
-      | Some _ -> moves_list
-      | None -> (
-          let new_loc =
-            Utils.Location.apply_move loc (List.hd prospective_moves)
-          in
-          match Types.color_present presence_list new_loc with
-          | Some _ -> moves_list
-          | None -> prospective_moves :: moves_list)
-  with Utils.Location.Off_board -> moves_list
+  let starting_row, prospective_moves =
+    match color with
+    | Types.White -> (2, [ Utils.Move.Up; Utils.Move.Up ])
+    | Types.Black -> (7, [ Utils.Move.Down; Utils.Move.Down ])
+  in
+  if Utils.Location.get_row loc <> starting_row then moves_list
+  else
+    let new_loc = Utils.Location.apply_moves loc prospective_moves in
+    match Types.color_present presence_list new_loc with
+    | Some _ -> moves_list
+    | None -> (
+        let new_loc =
+          Utils.Location.apply_move loc (List.hd prospective_moves)
+        in
+        match Types.color_present presence_list new_loc with
+        | Some _ -> moves_list
+        | None -> prospective_moves :: moves_list)
 
 let pawn_valid_moves loc color presence_list =
   let curr_moves_list = [] in
