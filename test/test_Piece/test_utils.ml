@@ -64,22 +64,49 @@ let moves_equal moves1 moves2 =
   in
   moves1_moves_in_moves2 moves1 moves2 && moves1_moves_in_moves2 moves2 moves1
 
-(** [move_contents_equal lst1 lst2] is whether [lst1] and [lst2] have the same
-    contents, even if in a different order. *)
-let move_contents_equal lst1 lst2 =
-  let lst1_elements_in_lst2 lst1 lst2 =
-    List.for_all
-      (fun moves1 -> List.exists (fun moves2 -> moves_equal moves1 moves2) lst2)
-      lst1
-  in
-  lst1_elements_in_lst2 lst1 lst2 && lst1_elements_in_lst2 lst2 lst1
+(** [int_of_move move] is a different value for each [move], to allow for
+    sorting. *)
+let int_of_move = function
+  | Utils.Move.Up -> 4
+  | Utils.Move.Down -> 3
+  | Utils.Move.Left -> 2
+  | Utils.Move.Right -> 1
+
+(** [sort_moves moves] is the sorted version of [moves]. *)
+let sort_moves =
+  List.sort (fun move1 move2 -> int_of_move move1 - int_of_move move2)
+
+(** [compare_moves moves1 moves2] is [1] if [move1] comes before [move2], [-1]
+    if [move2] comes before [move1], and [0] if they are the same. *)
+let rec compare_moves moves1 moves2 =
+  match (moves1, moves2) with
+  | [], [] -> 0
+  | [], _ :: _ -> 1
+  | _ :: _, [] -> -1
+  | x :: xs, y :: ys ->
+      let comparison = int_of_move x - int_of_move y in
+      if comparison > 0 then 1
+      else if comparison < 0 then -1
+      else compare_moves xs ys
 
 (** [moves_list_printer moves_list] is the string representation of
     [moves_list]. *)
 let moves_list_printer moves_list =
-  let string_moves_list = List.map (List.map Utils.Move.to_string) moves_list in
+  let sorted_moves_list =
+    List.sort compare_moves (List.map sort_moves moves_list)
+  in
+  let string_moves_list =
+    List.map (List.map Utils.Move.to_string) sorted_moves_list
+  in
   let moves_string_list = List.map (String.concat "-") string_moves_list in
   String.concat " " moves_string_list
+
+(** [moves_contents_equal lst1 lst2] is whether [lst1] and [lst2] have the same
+    contents, even if in a different order. *)
+let moves_contents_equal lst1 lst2 =
+  let str_lst1 = moves_list_printer lst1 in
+  let str_lst2 = moves_list_printer lst2 in
+  str_lst1 = str_lst2
 
 (** A functor for testing a piece, based on test inputs of type
     [PieceTestInputs]. *)
@@ -110,9 +137,10 @@ module PieceTester (Inputs : PieceTestInputs) = struct
       ~printer:Utils.Location.str_of_loc
 
   let moves_check _ =
-    assert_equal Inputs.possible_moves
+    assert_equal
+      (List.sort compare_moves (List.map sort_moves Inputs.possible_moves))
       (Piece.Pieces.get_valid_moves piece Inputs.board)
-      ~cmp:move_contents_equal ~printer:moves_list_printer
+      ~cmp:moves_contents_equal ~printer:moves_list_printer
 
   let tests = [ "basic_check" >:: basic_check; "moves_check" >:: moves_check ]
 end

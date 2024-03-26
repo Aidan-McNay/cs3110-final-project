@@ -1,3 +1,10 @@
 (tests
- (names test_Piece test_Pawn test_Knight)
+ (names
+  test_Piece
+  test_Pawn
+  test_Knight
+  test_Bishop
+  test_Rook
+  test_Queen
+  test_King)
  (libraries ounit2 Piece Utils))
