@@ -43,3 +43,10 @@ val move_history : t -> move_record list
 
 val string_rep : t -> string
 (** [string_rep board] is the string representation of [board]. *)
+
+val piece_at_loc : Piece.Pieces.t list -> Utils.Location.t -> Piece.Pieces.t option
+(** [piece_at_loc] is the piece at a location given a list of pieces*)
+
+
+val get_pieces_on_board : t -> Piece.Pieces.t list
+(** [get_pieces_onboard] is the list of all pieces on a board given a board t*) 

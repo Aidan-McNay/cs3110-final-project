@@ -97,6 +97,10 @@ let piece_at_loc piece_list loc =
   let piece_at_loc piece = Piece.Pieces.get_loc piece = loc in
   List.find_opt piece_at_loc piece_list
 
+(** Added code*)
+let get_pieces_on_board game = game.pieces_on_board
+
+
 (** [capture_piece board loc] is [board] with the piece at [loc] captured, as
     well as whether a piece was captured. Evaluates to [board, false] if there
     is no piece at [loc]. *)
@@ -141,7 +145,7 @@ let move_piece board start finish =
       else
         let captured_board, captured_a_piece = capture_piece board finish in
         let pieces_on_board =
-          move_piece_list board.pieces_on_board start finish
+          move_piece_list captured_board.pieces_on_board start finish
         in
         let new_move_record =
           { piece; start; finish; is_check = false; captured_a_piece }
@@ -154,10 +158,37 @@ let move_piece board start finish =
           },
           new_move_record )
 
-let in_check board color =
-  ignore board;
-  ignore color;
-  failwith "Unimplemented"
+
+
+let pieces_on_board_of_color board (color : Piece.Pieces.color) = 
+  List.filter (fun piece -> Piece.Pieces.get_color piece = color) (board.pieces_on_board)
+
+exception BigIssue_King_Went_Missing
+
+let get_king board (color : Piece.Pieces.color) = 
+  let updated_list = pieces_on_board_of_color board color in
+  let king = List.filter (fun piece -> Piece.Pieces.get_type piece = (King : Piece.Types.piece_type)) updated_list in
+  if List.length king <> 1 then raise BigIssue_King_Went_Missing else
+    List.nth king 0
+
+let can_move_to board piece location = 
+  try 
+    let piece_location = Piece.Pieces.get_loc piece in
+    let _ = move_piece board piece_location location in
+    true
+with
+  | Invalid_move -> false
+
+let check_all_color_move_to board (color1 : Piece.Pieces.color) (color2 : Piece.Pieces.color) = 
+  let get_color1_board_pieces = pieces_on_board_of_color board color1 in
+  let king_location = Piece.Pieces.get_loc (get_king board color2) in
+  let all_pieces_can_capture_king = List.filter (fun piece -> can_move_to board piece king_location) get_color1_board_pieces in
+  if List.is_empty all_pieces_can_capture_king then true else false
+
+let in_check board (color : Piece.Pieces.color) =
+  match color with
+  | White -> check_all_color_move_to board Black White
+  | Black -> check_all_color_move_to board White Black
 
 exception No_moves_made
 
