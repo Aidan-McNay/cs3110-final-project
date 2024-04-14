@@ -70,7 +70,7 @@ let to_string piece =
   | Types.Black -> to_string_black piece
   | Types.White -> to_string_white piece
 
-let to_image piece =
+let to_image piece bg =
   let color =
     match piece.color with
     | Types.Black -> "black"
@@ -86,4 +86,4 @@ let to_image piece =
     | Types.King -> "king"
   in
   let filename = "icons/" ^ name ^ "_" ^ color ^ ".png" in
-  Bogue.Image.create filename
+  Bogue.Image.create ~bg filename

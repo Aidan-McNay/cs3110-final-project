@@ -1,0 +1,8 @@
+(library
+ (inline_tests)
+ (name Gui)
+ (libraries Board)
+ (preprocess
+  (pps ppx_inline_test))
+ (instrumentation
+  (backend bisect_ppx)))

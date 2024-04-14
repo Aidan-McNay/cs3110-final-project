@@ -200,7 +200,7 @@ let string_rep board =
   ^ String.concat "\n  |---+---+---+---+---+---+---+---|\n" row_reps
   ^ "\n  `-------------------------------'\n    A   B   C   D   E   F   G   H "
 
-let image_at_loc board loc =
+let image_at_loc board loc bg =
   match piece_at_loc board.pieces_on_board loc with
-  | Some piece -> Some (Piece.Pieces.to_image piece)
-  | None -> None
+  | Some piece -> Bogue.Style.Image (Piece.Pieces.to_image piece bg)
+  | None -> Bogue.Style.Solid bg
