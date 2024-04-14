@@ -10,13 +10,23 @@ The session can then be exited by typing `#quit;;` and pressing "Enter"
 
 ## Packages
 
-In addition to the base OCaml installation, our game requires 3 packages, which can be done with the following commands:
+In addition to the base OCaml installation, our game requires 4 packages, 3 of which can be installed with the following commands:
 
 ```bash
 opam update
 opam upgrade
 opam install ounit2 bisect_ppx ppx_inline_test
 ```
+
+For our final package, Bogue, we found that the distributed version caused a segmentation fault on some MacOS machines due to a call to the underlying `Tsdl` library containing a mis-wrapped SDL binding in C. To fix this, we created our own fork of Bogue, which can be installed from our secondary repository:
+
+```bash
+git clone git@github.com:Aidan-McNay/bogue.git
+cd bogue
+opam pin add .
+```
+
+If you find that Bogue works for you as normal (no segmentation faults), or that [the particular issue](https://discuss.ocaml.org/t/ann-bogue-the-ocaml-gui/9099/60) has been resolved, Bogue could instead be installed as normal using `opam install bogue`
 
 _(The first two, `ounit2` and `bisect_ppx`, are installed with the textbook's installation, but are replicated here for completeness.)_
 

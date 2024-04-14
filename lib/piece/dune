@@ -1,7 +1,7 @@
 (library
  (inline_tests)
  (name Piece)
- (libraries Utils)
+ (libraries Utils bogue)
  (preprocess
   (pps ppx_inline_test))
  (instrumentation

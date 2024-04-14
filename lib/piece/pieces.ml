@@ -69,3 +69,21 @@ let to_string piece =
   match piece.color with
   | Types.Black -> to_string_black piece
   | Types.White -> to_string_white piece
+
+let to_image piece =
+  let color =
+    match piece.color with
+    | Types.Black -> "black"
+    | Types.White -> "white"
+  in
+  let name =
+    match piece.piece_type with
+    | Types.Pawn -> "pawn"
+    | Types.Knight -> "knight"
+    | Types.Bishop -> "bishop"
+    | Types.Rook -> "rook"
+    | Types.Queen -> "queen"
+    | Types.King -> "king"
+  in
+  let filename = "icons/" ^ name ^ "_" ^ color ^ ".png" in
+  Bogue.Image.create filename

@@ -34,3 +34,6 @@ val get_valid_moves : t -> t list -> Utils.Move.moves list
 
 val to_string : t -> string
 (** [to_string piece] is the string representation of [piece]. *)
+
+val to_image : t -> Bogue.Image.t
+(** [to_image piece] is the image representation of [piece]. *)
