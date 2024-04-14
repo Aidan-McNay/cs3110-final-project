@@ -30,3 +30,6 @@ val apply_moves : t -> Move.moves -> t
 
 val str_of_loc : t -> string
 (** [str_of_loc loc] is the string representation of [loc]. *)
+
+val color_of_loc : t -> Bogue.Draw.color
+(** [color_of_loc loc] is the color of the square at [loc]. *)

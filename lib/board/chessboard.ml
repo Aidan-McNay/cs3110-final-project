@@ -202,5 +202,8 @@ let string_rep board =
 
 let image_at_loc board loc bg =
   match piece_at_loc board.pieces_on_board loc with
-  | Some piece -> Bogue.Style.Image (Piece.Pieces.to_image piece bg)
-  | None -> Bogue.Style.Solid bg
+  | Some piece -> Piece.Pieces.to_image piece bg
+  | None ->
+      Bogue.Widget.box ~w:50 ~h:50
+        ~style:(Bogue.Style.of_bg (Bogue.Style.Solid bg))
+        ()

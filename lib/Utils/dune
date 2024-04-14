@@ -1,6 +1,7 @@
 (library
  (inline_tests)
  (name Utils)
+ (libraries bogue)
  (preprocess
   (pps ppx_inline_test))
  (instrumentation

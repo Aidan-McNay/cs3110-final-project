@@ -86,4 +86,5 @@ let to_image piece bg =
     | Types.King -> "king"
   in
   let filename = "icons/" ^ name ^ "_" ^ color ^ ".png" in
-  Bogue.Image.create ~bg filename
+  ignore bg;
+  Bogue.Widget.image ~w:50 ~h:50 ~bg filename
