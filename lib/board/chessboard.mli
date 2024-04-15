@@ -43,3 +43,8 @@ val move_history : t -> move_record list
 
 val string_rep : t -> string
 (** [string_rep board] is the string representation of [board]. *)
+
+val image_at_loc :
+  ?selected:bool -> t -> Utils.Location.t -> Bogue.Draw.color -> Bogue.Widget.t
+(** [image_at_loc board loc bg] is the image of a piece on [board] at [loc] with
+    background [bg]. The image is only the background if no piece is present. *)

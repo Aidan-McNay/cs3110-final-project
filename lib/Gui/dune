@@ -1,6 +1,7 @@
 (library
  (inline_tests)
- (name Game)
+ (name Gui)
+ (libraries Board)
  (preprocess
   (pps ppx_inline_test))
  (instrumentation

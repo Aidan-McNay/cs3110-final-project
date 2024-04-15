@@ -42,3 +42,12 @@ let apply_move { column = c; row = r } move =
 
 let apply_moves loc moves = List.fold_left apply_move loc moves
 let str_of_loc loc = String.make 1 (get_col loc) ^ string_of_int (get_row loc)
+
+let color_of_loc loc =
+  let coord_sum = loc.column + loc.row in
+  let color_str =
+    match coord_sum mod 2 = 0 with
+    | true -> "#964B00"
+    | false -> "#FEFBEA"
+  in
+  Bogue.Draw.opaque (Bogue.Draw.find_color color_str)
