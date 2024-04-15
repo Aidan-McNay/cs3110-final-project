@@ -39,7 +39,8 @@ let row_layout row =
     let widget = fst (make_widget loc) in
     row_arr.(col_idx) <- widget
   done;
-  Bogue.Layout.flat_of_w ~sep:0 ~align:Bogue.Draw.Center (Array.to_list row_arr)
+  Bogue.Layout.flat_of_w ~sep:0 ~align:Bogue.Draw.Center ~scale_content:true
+    (Array.to_list row_arr)
 
 (** [board_border] is the layout border that goes around the board layout. *)
 let board_border =
@@ -56,24 +57,19 @@ let board_layout () =
     row_layouts.(row - 1) <- row_layout row
   done;
   let layout =
-    Bogue.Layout.tower ~align:Bogue.Draw.Center
-      [
-        Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center
-          (List.rev (Array.to_list row_layouts));
-      ]
+    Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Max ~scale_content:true
+      (List.rev (Array.to_list row_layouts))
   in
-  Bogue.Layout.auto_scale layout;
   let update_action () =
     let row_layouts = Array.make 8 (Bogue.Layout.empty ~w:1 ~h:1 ()) in
     for row = 1 to 8 do
       row_layouts.(row - 1) <- row_layout row
     done;
     let new_board_layout =
-      Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center
+      Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center ~scale_content:true
         (List.rev (Array.to_list row_layouts))
     in
-    Bogue.Layout.set_rooms layout [ new_board_layout ];
-    Bogue.Layout.auto_scale layout
+    Bogue.Layout.set_rooms layout [ new_board_layout ]
   in
   (layout, update_action)
 
@@ -135,7 +131,14 @@ let input_layout update_action =
 let game_layout () =
   ignore update_board;
   let chessboard_layout, update_action = board_layout () in
-  Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center
-    [
-      title_layout; chessboard_layout; prompt_layout; input_layout update_action;
-    ]
+  let layout =
+    Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center
+      [
+        title_layout;
+        chessboard_layout;
+        prompt_layout;
+        input_layout update_action;
+      ]
+  in
+  Bogue.Layout.disable_resize layout;
+  layout
