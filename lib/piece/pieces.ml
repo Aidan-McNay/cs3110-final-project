@@ -88,3 +88,27 @@ let to_image piece bg =
   let filename = "icons/" ^ name ^ "_" ^ color ^ ".png" in
   ignore bg;
   Bogue.Widget.image ~w:50 ~h:50 ~bg filename
+
+(** [to_algebraic_notation] is the string representation of [piece] using the
+    English Standard Algebraic Notation of Chess*)
+let to_algebraic_notation piece =
+  match piece.piece_type with
+  | Types.Pawn -> ""
+  | Types.Knight -> "N"
+  | Types.Bishop -> "B"
+  | Types.Rook -> "R"
+  | Types.Queen -> "Q"
+  | Types.King -> "K"
+
+exception InvalidSymbol
+
+(** [to_alg_notation_to_piece_type] takes the algebraic notation character
+    symbol of a piece and converts it into [piece_type]*)
+let alg_notation_to_piece_type symbol =
+  match symbol with
+  | ' ' -> Types.Pawn
+  | 'N' -> Types.Knight
+  | 'B' -> Types.Bishop
+  | 'Q' -> Types.Queen
+  | 'K' -> Types.King
+  | _ -> raise InvalidSymbol

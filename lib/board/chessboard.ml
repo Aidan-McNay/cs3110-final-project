@@ -141,7 +141,7 @@ let move_piece board start finish =
       else
         let captured_board, captured_a_piece = capture_piece board finish in
         let pieces_on_board =
-          move_piece_list board.pieces_on_board start finish
+          move_piece_list captured_board.pieces_on_board start finish
         in
         let new_move_record =
           { piece; start; finish; is_check = false; captured_a_piece }
@@ -210,3 +210,65 @@ let image_at_loc ?(selected = false) board loc bg =
       Bogue.Widget.box ~w:50 ~h:50
         ~style:(Bogue.Style.of_bg (Bogue.Style.Solid bg))
         ()
+
+(** [move_record_to_alg_notation] converts a record of a made move [move_rec] to
+    a string of the algebraic notation format*)
+let move_record_to_alg_notation move_rec board =
+  let piece = move_rec.piece in
+  let finish = move_rec.finish in
+  let start = move_rec.start in
+  let capture = move_rec.captured_a_piece in
+  let ambig =
+    List.filter
+      (fun pc ->
+        Piece.Pieces.get_type pc = Piece.Pieces.get_type piece
+        && is_valid_move board pc finish
+        && Piece.Pieces.get_loc piece <> Piece.Pieces.get_loc pc)
+      board.pieces_on_board
+  in
+  Piece.Pieces.to_algebraic_notation piece
+  ^
+  if List.length ambig > 0 then
+    let dup = List.hd ambig in
+    if
+      Utils.Location.get_col (Piece.Pieces.get_loc dup)
+      <> Utils.Location.get_col start
+    then String.make 1 (Utils.Location.get_col start)
+    else string_of_int (Utils.Location.get_row start)
+  else "" ^ if capture then "x" else "" ^ Utils.Location.str_of_loc finish
+
+(** [disambiguate] checks whether two pieces are in the same row/col or not*)
+let disambiguate id pc =
+  try
+    Utils.Location.get_row (Piece.Pieces.get_loc pc)
+    = int_of_string (Char.escaped id)
+  with _ ->
+    Utils.Location.get_col (Piece.Pieces.get_loc pc) = Char.uppercase_ascii id
+
+(** [simple_alg_notation_to_move] uses a simplified version of algebraic
+    notation to return a pair of starting location and ending location of a
+    piece*)
+let simple_alg_notation_to_move_record alg_not board =
+  let piece_type =
+    if Char.code alg_not.[0] > 91 then Piece.Types.Pawn
+    else Piece.Pieces.alg_notation_to_piece_type alg_not.[0]
+  in
+  let finish =
+    if Char.code alg_not.[0] > 91 then (alg_not.[1], alg_not.[2])
+    else (alg_not.[2], alg_not.[3])
+  in
+  let finish =
+    Utils.Location.init_loc (fst finish)
+      (int_of_string (Char.escaped (snd finish)))
+  in
+  let id = if Char.code alg_not.[0] > 91 then alg_not.[0] else alg_not.[1] in
+  let ambig =
+    List.filter
+      (fun pc ->
+        Piece.Pieces.get_type pc = piece_type
+        && is_valid_move board pc finish
+        && disambiguate id pc)
+      board.pieces_on_board
+  in
+  let moving_piece = List.hd ambig in
+  (Piece.Pieces.get_loc moving_piece, finish)
