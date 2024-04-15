@@ -19,12 +19,32 @@ let update_board loc1 loc2 =
   let new_game = fst (Board.Chessboard.move_piece !curr_board loc1 loc2) in
   curr_board := new_game
 
-(** [make_widget loc] is a widget to represent [loc] on a board, as well as an
-    action to update it from. *)
-let make_widget loc =
+(** [make_widget_layout loc] is a layout to represent [loc] on a board, as well
+    as an action to update it from. *)
+let make_widget_layout loc =
   let bg = Utils.Location.color_of_loc loc in
-  let widget = Board.Chessboard.image_at_loc !curr_board loc bg in
-  (widget, bg)
+  let widget_layout =
+    Bogue.Layout.resident (Board.Chessboard.image_at_loc !curr_board loc bg)
+  in
+  let layout =
+    Bogue.Layout.flat ~sep:0 ~align:Bogue.Draw.Center ~margins:0
+      [ widget_layout ]
+  in
+  let update_layout () =
+    let old_widget_layout = List.hd (Bogue.Layout.get_rooms layout) in
+    let new_widget = Board.Chessboard.image_at_loc !curr_board loc bg in
+    let new_widget_layout = Bogue.Layout.resident new_widget in
+    Bogue.Layout.(
+      setx new_widget_layout (getx old_widget_layout);
+      sety new_widget_layout (gety old_widget_layout);
+      set_width new_widget_layout (width old_widget_layout);
+      set_height new_widget_layout (height old_widget_layout);
+      auto_scale new_widget_layout);
+    Bogue.Layout.set_rooms layout [ new_widget_layout ];
+    Bogue.Layout.auto_scale layout;
+    Bogue.Widget.update new_widget
+  in
+  (layout, update_layout)
 
 (** [title_layout] is the layout containing the title of the game. *)
 let title_layout =
@@ -33,18 +53,25 @@ let title_layout =
   in
   Bogue.Layout.resident widget
 
-(** [row_layout row] is the row layout for [row]. *)
+(** [row_layout row] is the row layout for [row], as well as a function to
+    update it from. *)
 let row_layout row =
   let cols = "ABCDEFGH" in
-  let row_arr = Array.make 8 (Bogue.Widget.empty ~w:1 ~h:1 ()) in
+  let row_arr = Array.make 8 (Bogue.Layout.empty ~w:1 ~h:1 ()) in
+  let func_arr = Array.make 8 (fun () -> ()) in
   for col_idx = 0 to 7 do
     let col = cols.[col_idx] in
     let loc = Utils.Location.init_loc col row in
-    let widget = fst (make_widget loc) in
-    row_arr.(col_idx) <- widget
+    let layout, update_func = make_widget_layout loc in
+    row_arr.(col_idx) <- layout;
+    func_arr.(col_idx) <- update_func
   done;
-  Bogue.Layout.flat_of_w ~sep:0 ~align:Bogue.Draw.Center ~scale_content:true
-    (Array.to_list row_arr)
+  let update_function () = List.iter (fun f -> f ()) (Array.to_list func_arr) in
+  let layout =
+    Bogue.Layout.flat ~sep:0 ~align:Bogue.Draw.Center ~scale_content:true
+      ~margins:0 (Array.to_list row_arr)
+  in
+  (layout, update_function)
 
 (** [board_border] is the layout border that goes around the board layout. *)
 let board_border =
@@ -52,31 +79,23 @@ let board_border =
   let border_style = Bogue.Style.of_border (Bogue.Style.mk_border line) in
   Bogue.Layout.style_bg border_style
 
-(** [board_layout ()] gets the layout of the current chess board, as well as an
-    action to update them all. *)
+(** [board_layout ()] gets the layout of the current chess board, as well as a
+    function to update them all. *)
 let board_layout () =
-  ignore board_border;
   let row_layouts = Array.make 8 (Bogue.Layout.empty ~w:1 ~h:1 ()) in
+  let func_arr = Array.make 8 (fun () -> ()) in
   for row = 1 to 8 do
-    row_layouts.(row - 1) <- row_layout row
+    let new_row_layout, update_func = row_layout row in
+    row_layouts.(row - 1) <- new_row_layout;
+    func_arr.(row - 1) <- update_func
   done;
   let layout =
-    Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Max ~scale_content:true
+    Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center ~scale_content:true
       ~background:board_border
       (List.rev (Array.to_list row_layouts))
   in
-  let update_action () =
-    let row_layouts = Array.make 8 (Bogue.Layout.empty ~w:1 ~h:1 ()) in
-    for row = 1 to 8 do
-      row_layouts.(row - 1) <- row_layout row
-    done;
-    let new_board_layout =
-      Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center ~scale_content:true
-        (List.rev (Array.to_list row_layouts))
-    in
-    Bogue.Layout.set_rooms layout [ new_board_layout ]
-  in
-  (layout, update_action)
+  let update_function () = List.iter (fun f -> f ()) (Array.to_list func_arr) in
+  (layout, update_function)
 
 let prompt_text =
   [
