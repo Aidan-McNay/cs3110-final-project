@@ -1,4 +1,5 @@
 (* @author Aidan McNay (acm289) *)
 
-val game_layout : unit -> Bogue.Layout.t
-(** [board_layout ()] is the layout of the current board. *)
+val game_layout : Piece.Types.color -> Bogue.Layout.t
+(** [board_layout color] is the layout of the current board from [color]'s
+    perspective. *)

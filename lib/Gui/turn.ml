@@ -13,10 +13,13 @@ let white_callbacks = ref []
     turn. *)
 let black_callbacks = ref []
 
-let set_indicator color f =
+let set_callback color f =
   match color with
-  | Piece.Types.White -> white_callbacks := f :: !white_callbacks
-  | Piece.Types.Black -> black_callbacks := f :: !black_callbacks
+  | Some Piece.Types.White -> white_callbacks := f :: !white_callbacks
+  | Some Piece.Types.Black -> black_callbacks := f :: !black_callbacks
+  | None ->
+      black_callbacks := f :: !black_callbacks;
+      white_callbacks := f :: !white_callbacks
 
 exception Not_your_turn of Piece.Types.color
 

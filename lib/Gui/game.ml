@@ -13,26 +13,32 @@ let curr_board = ref Board.Chessboard.initial
 let popup =
   Bogue.Popup.info ~w:200 ~h:100 ~button:"Ok" ~button_w:50 ~button_h:40
 
-(** [update_board loc1 loc2] updates the board by moving a piece from [loc1] to
-    [loc2]. *)
-let update_board loc1 loc2 =
-  let new_game = fst (Board.Chessboard.move_piece !curr_board loc1 loc2) in
-  curr_board := new_game
+let () =
+  ignore popup;
+  ignore light_cornell
 
-(** [make_widget_layout loc] is a layout to represent [loc] on a board, as well
-    as an action to update it from. *)
-let make_widget_layout loc =
+(** [make_widget loc tracker] is a widget for [loc] that logs clicks with
+    [tracker]. *)
+let make_widget loc tracker =
   let bg = Utils.Location.color_of_loc loc in
-  let widget_layout =
-    Bogue.Layout.resident (Board.Chessboard.image_at_loc !curr_board loc bg)
-  in
+  let widget = Board.Chessboard.image_at_loc !curr_board loc bg in
+  Bogue.Widget.on_click
+    ~click:(fun _ -> Move_tracker.log_click tracker loc)
+    widget;
+  widget
+
+(** [make_widget_layout loc tracker] is a layout to represent [loc] on a board,
+    updating [tracker] when clicked. *)
+let make_widget_layout loc tracker =
+  let widget = make_widget loc tracker in
+  let widget_layout = Bogue.Layout.resident widget in
   let layout =
     Bogue.Layout.flat ~sep:0 ~align:Bogue.Draw.Center ~margins:0
       [ widget_layout ]
   in
   let update_layout () =
     let old_widget_layout = List.hd (Bogue.Layout.get_rooms layout) in
-    let new_widget = Board.Chessboard.image_at_loc !curr_board loc bg in
+    let new_widget = make_widget loc tracker in
     let new_widget_layout = Bogue.Layout.resident new_widget in
     Bogue.Layout.(
       setx new_widget_layout (getx old_widget_layout);
@@ -44,34 +50,28 @@ let make_widget_layout loc =
     Bogue.Layout.auto_scale layout;
     Bogue.Widget.update new_widget
   in
-  (layout, update_layout)
+  Turn.set_callback None update_layout;
+  layout
 
-(** [title_layout] is the layout containing the title of the game. *)
-let title_layout =
+(** [title_layout ()] is a layout containing the title of the game. *)
+let title_layout () =
   let widget =
     Bogue.Widget.label ~align:Bogue.Draw.Center ~size:30 "CheckCamelMate"
   in
   Bogue.Layout.resident widget
 
-(** [row_layout row] is the row layout for [row], as well as a function to
-    update it from. *)
-let row_layout row =
+(** [row_layout row tracker] is the row layout for [row], with each widget
+    updating [tracker]. *)
+let row_layout row tracker =
   let cols = "ABCDEFGH" in
   let row_arr = Array.make 8 (Bogue.Layout.empty ~w:1 ~h:1 ()) in
-  let func_arr = Array.make 8 (fun () -> ()) in
   for col_idx = 0 to 7 do
     let col = cols.[col_idx] in
     let loc = Utils.Location.init_loc col row in
-    let layout, update_func = make_widget_layout loc in
-    row_arr.(col_idx) <- layout;
-    func_arr.(col_idx) <- update_func
+    row_arr.(col_idx) <- make_widget_layout loc tracker
   done;
-  let update_function () = List.iter (fun f -> f ()) (Array.to_list func_arr) in
-  let layout =
-    Bogue.Layout.flat ~sep:0 ~align:Bogue.Draw.Center ~scale_content:true
-      ~margins:0 (Array.to_list row_arr)
-  in
-  (layout, update_function)
+  Bogue.Layout.flat ~sep:0 ~align:Bogue.Draw.Center ~scale_content:true
+    ~margins:0 (Array.to_list row_arr)
 
 (** [board_border] is the layout border that goes around the board layout. *)
 let board_border =
@@ -79,97 +79,32 @@ let board_border =
   let border_style = Bogue.Style.of_border (Bogue.Style.mk_border line) in
   Bogue.Layout.style_bg border_style
 
-(** [board_layout ()] gets the layout of the current chess board, as well as a
-    function to update them all. *)
-let board_layout () =
+(** [board_layout tracker] gets the layout of the current chess board, with each
+    widget updating [tracker]. *)
+let board_layout tracker color =
   let row_layouts = Array.make 8 (Bogue.Layout.empty ~w:1 ~h:1 ()) in
-  let func_arr = Array.make 8 (fun () -> ()) in
   for row = 1 to 8 do
-    let new_row_layout, update_func = row_layout row in
-    row_layouts.(row - 1) <- new_row_layout;
-    func_arr.(row - 1) <- update_func
+    row_layouts.(row - 1) <- row_layout row tracker
   done;
-  let layout =
-    Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center ~scale_content:true
-      ~background:board_border
-      (List.rev (Array.to_list row_layouts))
+  let layout_list =
+    match color with
+    | Piece.Types.White -> List.rev (Array.to_list row_layouts)
+    | Piece.Types.Black -> Array.to_list row_layouts
   in
-  let update_function () = List.iter (fun f -> f ()) (Array.to_list func_arr) in
-  (layout, update_function)
-
-let prompt_text =
-  [
-    "";
-    "A valid chess move is in the form of '[C1][I1] [C2][I2]'";
-    " - C1 and C2 is a char between A and H.";
-    " - I1 and I2 are ints between 1 and 8.";
-    "An example usage for a first move would be 'D7 D6'.";
-  ]
+  Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center ~scale_content:true
+    ~background:board_border layout_list
 
 (** [prompt_layout] is the layout for prompting the user. *)
-let prompt_layout =
+let prompt_layout () =
   Bogue.Layout.tower_of_w ~sep:0 ~align:Bogue.Draw.Center
-    (List.map (Bogue.Widget.label ~size:12) prompt_text)
+    [ Bogue.Widget.label ~size:30 "Click pieces to move!" ]
 
-(** [input_button] is the button the user uses to input moves. *)
-let input_button =
-  let input_button_label = Bogue.Label.create ~size:20 "Move!" in
-  let input_button_bg = Bogue.Style.Solid light_cornell in
-  Bogue.Widget.button ~fg:cornell ~border_radius:10 ~border_color:cornell
-    ~label:input_button_label ~bg_off:input_button_bg ~bg_on:input_button_bg
-    ~bg_over:(Some input_button_bg) "N/A"
-
-(** [input_text] is the text-input widget where users enter moves. *)
-let input_text = Bogue.Widget.text_input ~prompt:"Next move" ()
-
-(** [input_text_backgroun] is the background for the text input layout. *)
-let input_text_background =
-  let line = Bogue.Style.mk_line ~color:cornell ~width:2 () in
-  let border_style =
-    Bogue.Style.of_border (Bogue.Style.mk_border ~radius:5 line)
-  in
-  let input_text_style =
-    Bogue.Style.with_bg
-      (Bogue.Style.Solid (Bogue.Draw.opaque Bogue.Draw.white))
-      border_style
-  in
-  Bogue.Layout.style_bg input_text_style
-
-(** [input_layout update_action] is the layout for user input, updating with the
-    board with [update_action]. *)
-let input_layout update_action =
-  let text_layout =
-    Bogue.Layout.resident ~w:300 ~background:input_text_background input_text
-  in
-  let button_layout = Bogue.Layout.resident ~w:100 input_button in
-  let button_update _ =
-    let top_layout = Bogue.Layout.top_house text_layout in
-    try
-      let move_str = Bogue.Widget.get_text input_text in
-      let loc1, loc2 = Parse.get_locs move_str in
-      update_board loc1 loc2;
-      update_action ();
-      Bogue.Widget.set_text input_text ""
-    with
-    | Parse.Invalid_input message -> popup message top_layout
-    | Board.Chessboard.Invalid_move ->
-        popup "Whoops - not a valid move!" top_layout
-  in
-  Bogue.Widget.on_button_release ~release:button_update input_button;
-  Bogue.Layout.flat ~sep:10 ~align:Bogue.Draw.Center
-    [ text_layout; button_layout ]
-
-let game_layout () =
-  ignore update_board;
-  let chessboard_layout, update_action = board_layout () in
+let game_layout color =
+  let tracker = Move_tracker.init curr_board color in
+  let chessboard_layout = board_layout tracker color in
   let layout =
     Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center
-      [
-        title_layout;
-        chessboard_layout;
-        prompt_layout;
-        input_layout update_action;
-      ]
+      [ title_layout (); chessboard_layout; prompt_layout () ]
   in
   Bogue.Layout.disable_resize layout;
   layout
