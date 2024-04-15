@@ -272,3 +272,8 @@ let simple_alg_notation_to_move_record alg_not board =
   in
   let moving_piece = List.hd ambig in
   (Piece.Pieces.get_loc moving_piece, finish)
+
+(* Temporary fix to allow to build *)
+let () =
+  ignore move_record_to_alg_notation;
+  ignore simple_alg_notation_to_move_record
