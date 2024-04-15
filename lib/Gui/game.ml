@@ -9,6 +9,10 @@ let light_cornell = Bogue.Draw.opaque (Bogue.Draw.find_color "#FFA6A6")
 (** [curr_board] is the current chess board we're using. *)
 let curr_board = ref Board.Chessboard.initial
 
+(** [popup err_msg layout] displayes [err_msg] on a popup on [layout]. *)
+let popup =
+  Bogue.Popup.info ~w:200 ~h:100 ~button:"Ok" ~button_w:50 ~button_h:40
+
 (** [update_board loc1 loc2] updates the board by moving a piece from [loc1] to
     [loc2]. *)
 let update_board loc1 loc2 =
@@ -58,6 +62,7 @@ let board_layout () =
   done;
   let layout =
     Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Max ~scale_content:true
+      ~background:board_border
       (List.rev (Array.to_list row_layouts))
   in
   let update_action () =
@@ -75,6 +80,7 @@ let board_layout () =
 
 let prompt_text =
   [
+    "";
     "A valid chess move is in the form of '[C1][I1] [C2][I2]'";
     " - C1 and C2 is a char between A and H.";
     " - I1 and I2 are ints between 1 and 8.";
@@ -118,11 +124,17 @@ let input_layout update_action =
   in
   let button_layout = Bogue.Layout.resident ~w:100 input_button in
   let button_update _ =
-    let move_str = Bogue.Widget.get_text input_text in
-    let loc1, loc2 = Parse.get_locs move_str in
-    update_board loc1 loc2;
-    update_action ();
-    Bogue.Widget.set_text input_text ""
+    let top_layout = Bogue.Layout.top_house text_layout in
+    try
+      let move_str = Bogue.Widget.get_text input_text in
+      let loc1, loc2 = Parse.get_locs move_str in
+      update_board loc1 loc2;
+      update_action ();
+      Bogue.Widget.set_text input_text ""
+    with
+    | Parse.Invalid_input message -> popup message top_layout
+    | Board.Chessboard.Invalid_move ->
+        popup "Whoops - not a valid move!" top_layout
   in
   Bogue.Widget.on_button_release ~release:button_update input_button;
   Bogue.Layout.flat ~sep:10 ~align:Bogue.Draw.Center
