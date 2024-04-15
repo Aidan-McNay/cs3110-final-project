@@ -56,10 +56,14 @@ let log_click tracker loc =
     if complete_move then (
       let loc1 = get_click tracker.clicks_made 0 in
       let loc2 = get_click tracker.clicks_made 1 in
+      reset_click tracker.clicks_made;
       let new_game =
         fst (Board.Chessboard.move_piece !(tracker.board_ref) loc1 loc2)
       in
       tracker.board_ref := new_game;
-      reset_click tracker.clicks_made;
       Turn.make_move tracker.color)
     else ()
+
+let selected tracker loc =
+  if !(tracker.clicks_made).num_logged = 0 then false
+  else loc = get_click tracker.clicks_made 0

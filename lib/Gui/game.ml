@@ -21,7 +21,10 @@ let () =
     [tracker]. *)
 let make_widget loc tracker =
   let bg = Utils.Location.color_of_loc loc in
-  let widget = Board.Chessboard.image_at_loc !curr_board loc bg in
+  let widget =
+    Board.Chessboard.image_at_loc !curr_board loc bg
+      ~selected:(Move_tracker.selected tracker loc)
+  in
   Bogue.Widget.on_click
     ~click:(fun _ -> Move_tracker.log_click tracker loc)
     widget;
@@ -36,9 +39,10 @@ let make_widget_layout loc tracker =
     Bogue.Layout.flat ~sep:0 ~align:Bogue.Draw.Center ~margins:0
       [ widget_layout ]
   in
-  let update_layout () =
+  let rec update_layout () =
     let old_widget_layout = List.hd (Bogue.Layout.get_rooms layout) in
     let new_widget = make_widget loc tracker in
+    Bogue.Widget.on_click ~click:(fun _ -> update_layout ()) new_widget;
     let new_widget_layout = Bogue.Layout.resident new_widget in
     Bogue.Layout.(
       setx new_widget_layout (getx old_widget_layout);
@@ -50,6 +54,7 @@ let make_widget_layout loc tracker =
     Bogue.Layout.auto_scale layout;
     Bogue.Widget.update new_widget
   in
+  Bogue.Widget.on_click ~click:(fun _ -> update_layout ()) widget;
   Turn.set_callback None update_layout;
   layout
 
@@ -60,10 +65,14 @@ let title_layout () =
   in
   Bogue.Layout.resident widget
 
-(** [row_layout row tracker] is the row layout for [row], with each widget
-    updating [tracker]. *)
-let row_layout row tracker =
-  let cols = "ABCDEFGH" in
+(** [row_layout row color tracker] is the row layout for [row] from the
+    perspective of [color], with each widget updating [tracker]. *)
+let row_layout row color tracker =
+  let cols =
+    match color with
+    | Piece.Types.White -> "ABCDEFGH"
+    | Piece.Types.Black -> "HGFEDCBA"
+  in
   let row_arr = Array.make 8 (Bogue.Layout.empty ~w:1 ~h:1 ()) in
   for col_idx = 0 to 7 do
     let col = cols.[col_idx] in
@@ -84,7 +93,7 @@ let board_border =
 let board_layout tracker color =
   let row_layouts = Array.make 8 (Bogue.Layout.empty ~w:1 ~h:1 ()) in
   for row = 1 to 8 do
-    row_layouts.(row - 1) <- row_layout row tracker
+    row_layouts.(row - 1) <- row_layout row color tracker
   done;
   let layout_list =
     match color with
@@ -94,17 +103,37 @@ let board_layout tracker color =
   Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center ~scale_content:true
     ~background:board_border layout_list
 
-(** [prompt_layout] is the layout for prompting the user. *)
-let prompt_layout () =
-  Bogue.Layout.tower_of_w ~sep:0 ~align:Bogue.Draw.Center
-    [ Bogue.Widget.label ~size:30 "Click pieces to move!" ]
+(** [prompt_layout color] is the layout for prompting the user based on what
+    [color] should do. *)
+let prompt_layout color =
+  let waiting_prompt =
+    match color with
+    | Piece.Types.White -> "Waiting for Black..."
+    | Piece.Types.Black -> "Waiting for White..."
+  in
+  let move_prompt = "Click pieces to move!" in
+  let init_prompt =
+    match color with
+    | Piece.Types.White -> move_prompt
+    | Piece.Types.Black -> waiting_prompt
+  in
+  let widget = Bogue.Widget.label ~size:20 init_prompt in
+  let update_prompt () =
+    let new_prompt =
+      if Turn.curr_turn () = color then move_prompt else waiting_prompt
+    in
+    Bogue.Widget.set_text widget new_prompt;
+    Bogue.Widget.update widget
+  in
+  Turn.set_callback None update_prompt;
+  Bogue.Layout.tower_of_w ~sep:0 ~align:Bogue.Draw.Center ~w:200 [ widget ]
 
 let game_layout color =
   let tracker = Move_tracker.init curr_board color in
   let chessboard_layout = board_layout tracker color in
   let layout =
     Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center
-      [ title_layout (); chessboard_layout; prompt_layout () ]
+      [ title_layout (); chessboard_layout; prompt_layout color ]
   in
   Bogue.Layout.disable_resize layout;
   layout

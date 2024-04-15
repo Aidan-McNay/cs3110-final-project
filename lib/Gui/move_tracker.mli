@@ -11,3 +11,6 @@ val init : Board.Chessboard.t ref -> Piece.Types.color -> t
 val log_click : t -> Utils.Location.t -> unit
 (** [log_click tracker loc] logs a click at [loc] with [tracker]. Has no effect
     if it isn't the color's turn. *)
+
+val selected : t -> Utils.Location.t -> bool
+(** [selected tracker loc] is whether [loc] is selected by a click in [tracker]. *)

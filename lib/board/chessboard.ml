@@ -200,7 +200,10 @@ let string_rep board =
   ^ String.concat "\n  |---+---+---+---+---+---+---+---|\n" row_reps
   ^ "\n  `-------------------------------'\n    A   B   C   D   E   F   G   H "
 
-let image_at_loc board loc bg =
+let image_at_loc ?(selected = false) board loc bg =
+  let bg =
+    if selected then Bogue.Draw.opaque (Bogue.Draw.find_color "#FF00FF") else bg
+  in
   match piece_at_loc board.pieces_on_board loc with
   | Some piece -> Piece.Pieces.to_image piece bg
   | None ->
