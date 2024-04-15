@@ -45,24 +45,37 @@ type t = {
   color : Piece.Types.color;
   board_ref : Board.Chessboard.t ref;
   clicks_made : clicks ref;
+  popup_ref : Bogue.Layout.t ref;
 }
 
-let init board_ref color = { color; board_ref; clicks_made = ref empty_clicks }
+let init board_ref color =
+  {
+    color;
+    board_ref;
+    clicks_made = ref empty_clicks;
+    popup_ref = ref (Bogue.Layout.empty ~w:1 ~h:1 ());
+  }
+
+let register_popup_layout tracker layout = tracker.popup_ref := layout
 
 let log_click tracker loc =
   if Turn.curr_turn () <> tracker.color then ()
   else
-    let complete_move = make_click tracker.clicks_made loc in
-    if complete_move then (
-      let loc1 = get_click tracker.clicks_made 0 in
-      let loc2 = get_click tracker.clicks_made 1 in
-      reset_click tracker.clicks_made;
-      let new_game =
-        fst (Board.Chessboard.move_piece !(tracker.board_ref) loc1 loc2)
-      in
-      tracker.board_ref := new_game;
-      Turn.make_move tracker.color)
-    else ()
+    try
+      let complete_move = make_click tracker.clicks_made loc in
+      if complete_move then (
+        let loc1 = get_click tracker.clicks_made 0 in
+        let loc2 = get_click tracker.clicks_made 1 in
+        reset_click tracker.clicks_made;
+        let new_game =
+          fst (Board.Chessboard.move_piece !(tracker.board_ref) loc1 loc2)
+        in
+        tracker.board_ref := new_game;
+        Turn.make_move tracker.color)
+      else ()
+    with Board.Chessboard.Invalid_move ->
+      Turn.call_callbacks (Some tracker.color);
+      Bogue.Popup.info "Whoops - that's not a valid move!" !(tracker.popup_ref)
 
 let selected tracker loc =
   if !(tracker.clicks_made).num_logged = 0 then false

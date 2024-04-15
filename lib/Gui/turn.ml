@@ -21,15 +21,20 @@ let set_callback color f =
       black_callbacks := f :: !black_callbacks;
       white_callbacks := f :: !white_callbacks
 
+let call_callbacks color =
+  match color with
+  | Some Piece.Types.White -> List.iter (fun f -> f ()) !white_callbacks
+  | Some Piece.Types.Black -> List.iter (fun f -> f ()) !black_callbacks
+  | None ->
+      List.iter (fun f -> f ()) !white_callbacks;
+      List.iter (fun f -> f ()) !black_callbacks
+
 exception Not_your_turn of Piece.Types.color
 
 let make_move color =
   if color <> !curr_turn_color then raise (Not_your_turn color)
-  else
-    match color with
-    | Piece.Types.White ->
-        curr_turn_color := Piece.Types.Black;
-        List.iter (fun f -> f ()) !white_callbacks
-    | Piece.Types.Black ->
-        curr_turn_color := Piece.Types.White;
-        List.iter (fun f -> f ()) !black_callbacks
+  else (
+    (match color with
+    | Piece.Types.White -> curr_turn_color := Piece.Types.Black
+    | Piece.Types.Black -> curr_turn_color := Piece.Types.White);
+    call_callbacks (Some color))

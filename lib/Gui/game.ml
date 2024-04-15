@@ -111,7 +111,7 @@ let prompt_layout color =
     | Piece.Types.White -> "Waiting for Black..."
     | Piece.Types.Black -> "Waiting for White..."
   in
-  let move_prompt = "Click pieces to move!" in
+  let move_prompt = "Click a piece to move!" in
   let init_prompt =
     match color with
     | Piece.Types.White -> move_prompt
@@ -136,4 +136,5 @@ let game_layout color =
       [ title_layout (); chessboard_layout; prompt_layout color ]
   in
   Bogue.Layout.disable_resize layout;
+  Move_tracker.register_popup_layout tracker layout;
   layout
