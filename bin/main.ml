@@ -119,7 +119,7 @@ let rec play game =
     first displays the string representation of the initial chessboard setup
     before calling [play] with the initial chess board setup. *)
 let start () =
-  let board = Bogue.Main.of_layout (Gui.Game.get_layout ()) in
+  let board = Bogue.Main.of_layout (Gui.Game.game_layout ()) in
   Bogue.Main.run board
 
 let () =
