@@ -1,7 +1,7 @@
 (library
  (inline_tests)
- (name Gui)
- (libraries Utils Board Piece Logic)
+ (name Logic)
+ (libraries Utils Board Piece)
  (preprocess
   (pps ppx_inline_test))
  (instrumentation
