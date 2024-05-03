@@ -1,8 +1,0 @@
-(library
- (inline_tests)
- (name Logic)
- (libraries Utils Board Piece)
- (preprocess
-  (pps ppx_inline_test))
- (instrumentation
-  (backend bisect_ppx)))

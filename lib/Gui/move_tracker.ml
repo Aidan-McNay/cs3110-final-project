@@ -68,7 +68,7 @@ let log_click tracker loc =
         let loc2 = get_click tracker.clicks_made 1 in
         reset_click tracker.clicks_made;
         let new_game =
-          Logic.Valid_move.make_move !(tracker.board_ref) tracker.color loc1
+          Board.Chessboard.move_piece !(tracker.board_ref) tracker.color loc1
             loc2
         in
         tracker.board_ref := new_game;

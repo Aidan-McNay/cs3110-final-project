@@ -5,6 +5,9 @@ type color =
   | White
   | Black
 
+val opposite : color -> color
+(** [opposite color] is the opposite color of [color]. *)
+
 val str_of_color : color -> string
 (** [str_of_color color] is the string representation of [color]. *)
 

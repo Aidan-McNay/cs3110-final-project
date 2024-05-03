@@ -25,6 +25,9 @@ val get_loc : t -> Utils.Location.t
 val set_loc : t -> Utils.Location.t -> t
 (** [set_loc piece loc] is [piece] at [loc]. *)
 
+val set_type : t -> piece_type -> t
+(** [set_type piece piece_type] is [piece] with type [piece_type]. *)
+
 val get_points : t -> int
 (** [get_points piece] is the number of points that [piece] is worth. *)
 
@@ -44,5 +47,5 @@ val to_algebraic_notation : t -> string
     English Standard Algebraic Notation of Chess*)
 
 val alg_notation_to_piece_type : char -> piece_type
-(** [to_alg_notation_to_piece_type] takes the algebraic notation character symbol of a piece
-    and converts it into [piece_type]*)
+(** [to_alg_notation_to_piece_type] takes the algebraic notation character
+    symbol of a piece and converts it into [piece_type]*)

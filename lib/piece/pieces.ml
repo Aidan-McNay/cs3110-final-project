@@ -29,6 +29,9 @@ let get_loc piece = piece.location
 let set_loc { color; piece_type; location = _; metadata } new_loc =
   { color; piece_type; location = new_loc; metadata }
 
+let set_type { color; piece_type = _; location; metadata } new_type =
+  { color; piece_type = new_type; location; metadata }
+
 let get_points piece = piece.metadata.points
 
 (** [piece_to_presence piece] is the presence associated with [piece]. *)

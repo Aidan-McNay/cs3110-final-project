@@ -9,6 +9,11 @@ let str_of_color = function
   | White -> "White"
   | Black -> "Black"
 
+let opposite color =
+  match color with
+  | Black -> White
+  | White -> Black
+
 (** The different kinds of piece that a chess piece can be *)
 type piece_type =
   | Pawn

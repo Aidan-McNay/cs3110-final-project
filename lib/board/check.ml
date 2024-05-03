@@ -27,3 +27,28 @@ let can_take_king king pieces piece =
 let in_check color pieces =
   let king = get_king color pieces in
   List.exists (can_take_king king pieces) pieces
+
+(** [can_fix_check color pieces piece] is whether [color] moving [piece] on
+    [pieces] can result in a state where [color] isn't in check. *)
+let can_fix_check color pieces piece =
+  if Piece.Pieces.get_color piece <> color then false
+  else
+    let valid_moves = Piece.Pieces.get_valid_moves piece pieces in
+    let curr_loc = Piece.Pieces.get_loc piece in
+    let moves_fix_check moves =
+      let new_loc = Utils.Location.apply_moves curr_loc moves in
+      let new_pieces =
+        List.map
+          (fun piece ->
+            if Piece.Pieces.get_loc piece = curr_loc then
+              Piece.Pieces.set_loc piece new_loc
+            else piece)
+          pieces
+      in
+      Bool.not (in_check color new_pieces)
+    in
+    List.exists moves_fix_check valid_moves
+
+let in_checkmate color pieces =
+  if Bool.not (in_check color pieces) then false
+  else Bool.not (List.exists (can_fix_check color pieces) pieces)

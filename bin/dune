@@ -1,4 +1,4 @@
 (executable
  (public_name CheckCamelMate)
  (name main)
- (libraries Board Piece Gui bogue Logic))
+ (libraries Board Piece Gui bogue))

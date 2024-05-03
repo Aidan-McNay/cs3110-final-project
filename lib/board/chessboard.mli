@@ -13,17 +13,11 @@ val get_points : t -> Piece.Pieces.color -> int
 exception Invalid_move
 (** Raised if the user attempts an invalid move. *)
 
-val get_start_move_record : Move_record.t -> Utils.Location.t
-val get_in_check_move_record : Move_record.t -> bool
-
-val move_piece : t -> Utils.Location.t -> Utils.Location.t -> t * Move_record.t
-(** [move_piece board start finish] is [board] after moving the piece at [start]
-    to [finish], capturing a piece on [finish] if necessary, as well as a record
-    of the move. Raises: [Invalid_move] if the move isn't a valid one. *)
-
-val in_check : t -> Piece.Pieces.color -> bool
-(** [in_check board color] is whether the player with [color] pieces is in check
-    on the current board. *)
+val move_piece :
+  t -> Piece.Types.color -> Utils.Location.t -> Utils.Location.t -> t
+(** [move_piece board color start finish] is [board] after [color] moves the
+    piece at [start] to [finish], capturing a piece on [finish] if necessary.
+    Raises: [Invalid_move] if the move isn't a valid one. *)
 
 exception No_moves_made
 (** Raised if no moves have been made. *)
@@ -38,22 +32,6 @@ val move_history : t -> Move_record.t list
 
 val string_rep : t -> string
 (** [string_rep board] is the string representation of [board]. *)
-
-val piece_at_loc :
-  Piece.Pieces.t list -> Utils.Location.t -> Piece.Pieces.t option
-(** [piece_at_loc] is the piece at a location given a list of pieces*)
-
-val get_pieces_on_board : t -> Piece.Pieces.t list
-(** [get_pieces_onboard] is the list of all pieces on a board given a board t*)
-
-val checkmate : t -> Piece.Types.color -> bool
-(** [checkmate] is a boolean that represents whether Piece.Types.color has lost. *)
-
-val check_board_for_promotion :
-  t -> Piece.Types.color -> Utils.Location.t * bool
-
-val promote :
-  t -> Utils.Location.t -> Piece.Types.piece_type -> Piece.Types.color -> t
 
 val image_at_loc :
   ?selected:bool -> t -> Utils.Location.t -> Bogue.Draw.color -> Bogue.Widget.t
