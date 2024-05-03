@@ -68,10 +68,8 @@ let log_click tracker loc =
         let loc2 = get_click tracker.clicks_made 1 in
         reset_click tracker.clicks_made;
         let new_game =
-          (* If checks if this is valid if not then reruns program here *)
-            let color = Piece.Pieces.get_color (Option.get (Board.Chessboard.piece_at_loc (Board.Chessboard.get_pieces_on_board !(tracker.board_ref)) loc1)) in
-            Logic.Valid_move.make_move !(tracker.board_ref) color loc1 loc2
-            (* fst (Board.Chessboard.move_piece !(tracker.board_ref) loc1 loc2)          Logic.Valid_move.make_move !(tracker.board_ref) tracker.color loc1 loc2 *)
+          Logic.Valid_move.make_move !(tracker.board_ref) tracker.color loc1
+            loc2
         in
         tracker.board_ref := new_game;
         Turn.make_move tracker.color)
