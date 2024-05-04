@@ -12,8 +12,10 @@ let curr_board = ref Board.Chessboard.initial
 (** [put_in_check ()] is whether the last move on [curr_board] put the other
     player in check. *)
 let put_in_check () =
-  let last_move = Board.Chessboard.last_move !curr_board in
-  Board.Move_record.was_check last_move
+  try
+    let last_move = Board.Chessboard.last_move !curr_board in
+    Board.Move_record.was_check last_move
+  with Board.Chessboard.No_moves_made -> false
 
 (** [popup err_msg layout] displayes [err_msg] on a popup on [layout]. *)
 let popup =
