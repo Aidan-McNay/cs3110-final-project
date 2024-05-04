@@ -110,12 +110,4 @@ let tests =
                  1) );
        ]
 
-let () =
-  Board.Alg_notation.(
-    print_move_history stdout (alg_notation_move_history move_record_test_list))
-
-let () =
-  Board.Alg_notation.move_history_file "game_history.txt"
-    (Board.Alg_notation.alg_notation_move_history move_record_test_list)
-
 let _ = run_test_tt_main tests
