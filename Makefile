@@ -1,4 +1,18 @@
+#=========================================================================
+# Makefile for CheckCamelMake
+
+.SILENT:
+
 .PHONY: bisect open_bisect
+
+build:
+	dune build
+
+run: build
+	dune exec bin/main.exe
+
+test:
+	dune test --force
 
 bisect:
 	find . -name '*.coverage' | xargs rm -f
