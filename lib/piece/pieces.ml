@@ -48,6 +48,10 @@ let get_valid_moves piece piece_list =
   let presence_list = map_to_presences piece_list in
   piece.metadata.get_valid_moves piece.location piece.color presence_list
 
+let piece_at_loc piece_list loc =
+  let piece_at_loc piece = get_loc piece = loc in
+  List.find_opt piece_at_loc piece_list
+
 (** [to_string_black piece] is the string representation of [piece], assuming
     that the piece is Black. *)
 let to_string_black piece =

@@ -2,7 +2,7 @@
 
 val is_castle : Piece.Types.color -> Piece.Pieces.t -> Utils.Location.t -> bool
 (** [is_castle color piece finish] is whether [color] moving [piece] to [finish]
-    represents a valid castle. *)
+    could only represent a castle. *)
 
 val can_castle :
   Piece.Types.color ->

@@ -35,6 +35,9 @@ val get_valid_moves : t -> t list -> Utils.Move.moves list
 (** [get_valid_moves piece state] is the valid moves that [piece] can take,
     given a board state of [state]. *)
 
+val piece_at_loc : t list -> Utils.Location.t -> t option
+(** [piece_at_loc piece_list loc] is the piece in [piece_list] at [loc], if any. *)
+
 val to_string : t -> string
 (** [to_string piece] is the string representation of [piece]. *)
 

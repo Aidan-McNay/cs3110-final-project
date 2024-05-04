@@ -85,16 +85,11 @@ let move_piece_list piece_list start finish =
       else piece)
     piece_list
 
-(** [piece_at_loc piece_list loc] is the piece in [piece_list] at [loc], if any. *)
-let piece_at_loc piece_list loc =
-  let piece_at_loc piece = Piece.Pieces.get_loc piece = loc in
-  List.find_opt piece_at_loc piece_list
-
 (** [capture_piece board loc] is [board] with the piece at [loc] captured, as
     well as whether a piece was captured. Evaluates to [board, false] if there
     is no piece at [loc]. *)
 let capture_piece board loc =
-  match piece_at_loc board.pieces_on_board loc with
+  match Piece.Pieces.piece_at_loc board.pieces_on_board loc with
   | Some piece ->
       let captured_by_white, captured_by_black =
         match Piece.Pieces.get_color piece with
@@ -141,9 +136,32 @@ let do_castle { pieces_on_board; captured_by_white; captured_by_black; moves }
       captured_by_black;
       moves = new_record :: moves;
     }
-  else (
-    print_endline "Can't castle";
-    raise Invalid_move)
+  else raise Invalid_move
+
+(** [do_en_passant board color start finish] is [board] after [color] does an
+    en_passant from [start] to [finish]. Requires: [color] moving a piece from
+    [start] to [finish] represents a castle. *)
+let do_en_passant
+    { pieces_on_board; captured_by_white; captured_by_black; moves } color start
+    finish =
+  if En_passant.can_en_passant color start finish pieces_on_board moves then
+    let new_pieces, new_record, captured_piece =
+      En_passant.en_passant color pieces_on_board start finish moves
+    in
+    let captured_by_white, captured_by_black =
+      match color with
+      | Piece.Types.White ->
+          (captured_piece :: captured_by_white, captured_by_black)
+      | Piece.Types.Black ->
+          (captured_by_white, captured_piece :: captured_by_black)
+    in
+    {
+      pieces_on_board = new_pieces;
+      captured_by_white;
+      captured_by_black;
+      moves = new_record :: moves;
+    }
+  else raise Invalid_move
 
 (** [should_promote piece] is whether [piece] needs to be promoted. *)
 let should_promote piece =
@@ -175,11 +193,14 @@ let promotion_check pieces =
   (List.map promoted_piece pieces, List.exists should_promote pieces)
 
 let move_piece board color start finish =
-  match piece_at_loc board.pieces_on_board start with
+  match Piece.Pieces.piece_at_loc board.pieces_on_board start with
   | None -> raise Invalid_move
   | Some piece ->
-      if Castle.is_castle color piece finish then
+      if color <> Piece.Pieces.get_color piece then raise Invalid_move
+      else if Castle.is_castle color piece finish then
         do_castle board color start finish
+      else if En_passant.is_en_passant color piece finish board.pieces_on_board
+      then do_en_passant board color start finish
       else if Bool.not (is_valid_move board piece finish) then
         raise Invalid_move
       else
@@ -249,7 +270,7 @@ let image_at_loc ?(selected = false) board loc bg =
   let bg =
     if selected then Bogue.Draw.opaque (Bogue.Draw.find_color "#FF00FF") else bg
   in
-  match piece_at_loc board.pieces_on_board loc with
+  match Piece.Pieces.piece_at_loc board.pieces_on_board loc with
   | Some piece -> Piece.Pieces.to_image piece bg
   | None ->
       Bogue.Widget.box ~w:50 ~h:50
