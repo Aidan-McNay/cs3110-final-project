@@ -98,10 +98,8 @@ let to_image piece bg =
   ignore bg;
   Bogue.Widget.image ~w:50 ~h:50 ~bg filename
 
-(** [to_algebraic_notation] is the string representation of [piece] using the
-    English Standard Algebraic Notation of Chess*)
-let to_algebraic_notation piece =
-  match piece.piece_type with
+let to_algebraic_notation piece_type =
+  match piece_type with
   | Types.Pawn -> ""
   | Types.Knight -> "N"
   | Types.Bishop -> "B"
@@ -111,8 +109,6 @@ let to_algebraic_notation piece =
 
 exception InvalidSymbol
 
-(** [to_alg_notation_to_piece_type] takes the algebraic notation character
-    symbol of a piece and converts it into [piece_type]*)
 let alg_notation_to_piece_type symbol =
   match symbol with
   | ' ' -> Types.Pawn

@@ -106,6 +106,6 @@ let en_passant color pieces start finish records =
         let is_check = Check.in_check (Piece.Types.opposite color) new_pieces in
         let record =
           Move_record.gen_record pawn_to_move start finish is_check true false
-            false
+            None
         in
         (new_pieces, record, pawn_to_remove)

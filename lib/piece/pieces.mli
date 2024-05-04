@@ -45,8 +45,8 @@ val to_image : t -> Bogue.Draw.color -> Bogue.Widget.t
 (** [to_image piece bg] is the image representation of [piece] with background
     [bg]. *)
 
-val to_algebraic_notation : t -> string
-(** [to_algebraic_notation] is the string representation of [piece] using the
+val to_algebraic_notation : piece_type -> string
+(** [to_algebraic_notation piece_type] is the string representation of [piece_type] using the
     English Standard Algebraic Notation of Chess*)
 
 val alg_notation_to_piece_type : char -> piece_type

@@ -44,3 +44,11 @@ val image_at_loc :
   ?selected:bool -> t -> Utils.Location.t -> Bogue.Draw.color -> Bogue.Widget.t
 (** [image_at_loc board loc bg] is the image of a piece on [board] at [loc] with
     background [bg]. The image is only the background if no piece is present. *)
+
+
+val is_valid_move : t -> Piece.Pieces.t -> Utils.Location.t -> bool
+(** [is_valid_move board piece new_loc] is whether moving [piece] to [new_loc]
+    on [board] is a valid move. *)
+
+val get_pieces_on_board : t -> Piece.Pieces.t list
+(**[get_pieces_on_board board] is the list of pieces on [board].*)

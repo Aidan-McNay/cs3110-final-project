@@ -146,6 +146,6 @@ let castle color pieces start finish records =
     in
     let is_check = Check.in_check (Piece.Types.opposite color) new_pieces in
     let record =
-      Move_record.gen_record king_piece start finish is_check false true false
+      Move_record.gen_record king_piece start finish is_check false true None
     in
     (new_pieces, record)

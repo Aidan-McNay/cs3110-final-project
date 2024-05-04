@@ -7,7 +7,7 @@ type t = {
   is_check : bool;
   capture : bool;
   castled : bool;
-  promoted : bool;
+  promoted : Piece.Types.piece_type option;
 }
 
 let gen_record piece start finish is_check capture castled promoted =

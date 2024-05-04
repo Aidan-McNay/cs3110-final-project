@@ -10,7 +10,7 @@ val gen_record :
   bool ->
   bool ->
   bool ->
-  bool ->
+  Piece.Types.piece_type option->
   t
 (** [gen_record piece start finish is_check capture castled promoted] is a
     record of [piece] moving from [start] to [finish], where [is_check] is
@@ -36,5 +36,5 @@ val was_capture : t -> bool
 val was_castle : t -> bool
 (** [was_castle record] is whether the move in [record] was a castle. *)
 
-val was_promotion : t -> bool
+val was_promotion : t -> Piece.Types.piece_type option
 (** [was_promotion record] is whether the move in [record] was a promotion. *)

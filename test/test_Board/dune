@@ -1,3 +1,5 @@
-(test
- (name test_Board)
- (libraries ounit2 Board))
+(tests
+ (names
+  test_Board
+  test_Notation)
+ (libraries ounit2 Board Piece Utils))
