@@ -74,9 +74,15 @@ let log_click tracker loc =
         tracker.board_ref := new_game;
         Turn.make_move tracker.color)
       else ()
-    with Board.Chessboard.Invalid_move ->
-      Turn.call_callbacks (Some tracker.color);
-      Bogue.Popup.info "Whoops - that's not a valid move!" !(tracker.popup_ref)
+    with
+    | Board.Chessboard.Invalid_move ->
+        Turn.call_callbacks (Some tracker.color);
+        Bogue.Popup.info "Whoops - that's not a valid move!"
+          !(tracker.popup_ref)
+    | Board.Chessboard.Puts_in_check ->
+        Turn.call_callbacks (Some tracker.color);
+        Bogue.Popup.info "Whoops - that move means you're in check!"
+          !(tracker.popup_ref)
 
 let selected tracker loc =
   if !(tracker.clicks_made).num_logged = 0 then false

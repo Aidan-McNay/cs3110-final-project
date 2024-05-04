@@ -13,11 +13,15 @@ val get_points : t -> Piece.Pieces.color -> int
 exception Invalid_move
 (** Raised if the user attempts an invalid move. *)
 
+exception Puts_in_check
+(** Raised if the user attempts a move that puts them in check. *)
+
 val move_piece :
   t -> Piece.Types.color -> Utils.Location.t -> Utils.Location.t -> t
 (** [move_piece board color start finish] is [board] after [color] moves the
     piece at [start] to [finish], capturing a piece on [finish] if necessary.
-    Raises: [Invalid_move] if the move isn't a valid one. *)
+    Raises: [Invalid_move] if the move isn't a valid one. Raises:
+    [Puts_in_check] if the move would put [color] in check. *)
 
 exception No_moves_made
 (** Raised if no moves have been made. *)

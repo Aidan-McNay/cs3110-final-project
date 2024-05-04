@@ -73,6 +73,7 @@ let get_points board color =
   | Piece.Types.Black -> get_piece_points board.captured_by_black
 
 exception Invalid_move
+exception Puts_in_check
 
 (** [move_piece_list piece_list start finish] is [piece_list] with the piece at
     [start] moved to [finish]. *)
@@ -155,18 +156,23 @@ let move_piece board color start finish =
       else
         let captured_board, captured_a_piece = capture_piece board finish in
         let pieces_on_board =
-          move_piece_list board.pieces_on_board start finish
+          move_piece_list captured_board.pieces_on_board start finish
         in
-        let new_move_record =
-          Move_record.gen_record piece start finish false captured_a_piece false
-            false
-        in
-        {
-          pieces_on_board;
-          captured_by_white = captured_board.captured_by_white;
-          captured_by_black = captured_board.captured_by_black;
-          moves = new_move_record :: captured_board.moves;
-        }
+        if Check.in_check color pieces_on_board then raise Puts_in_check
+        else
+          let check_opp =
+            Check.in_check (Piece.Types.opposite color) pieces_on_board
+          in
+          let new_move_record =
+            Move_record.gen_record piece start finish check_opp captured_a_piece
+              false false
+          in
+          {
+            pieces_on_board;
+            captured_by_white = captured_board.captured_by_white;
+            captured_by_black = captured_board.captured_by_black;
+            moves = new_move_record :: captured_board.moves;
+          }
 
 exception No_moves_made
 
@@ -219,6 +225,3 @@ let image_at_loc ?(selected = false) board loc bg =
       Bogue.Widget.box ~w:50 ~h:50
         ~style:(Bogue.Style.of_bg (Bogue.Style.Solid bg))
         ()
-
-(* Temporary fix to allow to build let () = ignore move_record_to_alg_notation;
-   ignore simple_alg_notation_to_move_record *)

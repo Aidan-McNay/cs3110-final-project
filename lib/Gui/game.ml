@@ -9,6 +9,12 @@ let light_cornell = Bogue.Draw.opaque (Bogue.Draw.find_color "#FFA6A6")
 (** [curr_board] is the current chess board we're using. *)
 let curr_board = ref Board.Chessboard.initial
 
+(** [put_in_check ()] is whether the last move on [curr_board] put the other
+    player in check. *)
+let put_in_check () =
+  let last_move = Board.Chessboard.last_move !curr_board in
+  Board.Move_record.was_check last_move
+
 (** [popup err_msg layout] displayes [err_msg] on a popup on [layout]. *)
 let popup =
   Bogue.Popup.info ~w:200 ~h:100 ~button:"Ok" ~button_w:50 ~button_h:40
@@ -112,6 +118,7 @@ let prompt_layout color =
     | Piece.Types.Black -> "Waiting for White..."
   in
   let move_prompt = "Click a piece to move!" in
+  let check_prompt = "You're in check!" in
   let init_prompt =
     match color with
     | Piece.Types.White -> move_prompt
@@ -120,7 +127,9 @@ let prompt_layout color =
   let widget = Bogue.Widget.label ~size:20 init_prompt in
   let update_prompt () =
     let new_prompt =
-      if Turn.curr_turn () = color then move_prompt else waiting_prompt
+      if Turn.curr_turn () = color then
+        if put_in_check () then check_prompt else move_prompt
+      else waiting_prompt
     in
     Bogue.Widget.set_text widget new_prompt;
     Bogue.Widget.update widget
