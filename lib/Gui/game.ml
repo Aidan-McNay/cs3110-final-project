@@ -109,16 +109,18 @@ let board_layout tracker color =
   Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center ~scale_content:true
     ~background:board_border layout_list
 
+let move_prompt = "Click a piece to move!"
+let check_prompt = "You're in check!"
+let won_prompt = "You won!"
+
 (** [prompt_layout color] is the layout for prompting the user based on what
     [color] should do. *)
 let prompt_layout color =
-  let waiting_prompt =
+  let waiting_prompt, defeat_prompt =
     match color with
-    | Piece.Types.White -> "Waiting for Black..."
-    | Piece.Types.Black -> "Waiting for White..."
+    | Piece.Types.White -> ("Waiting for Black...", "Black Won")
+    | Piece.Types.Black -> ("Waiting for White...", "White Won")
   in
-  let move_prompt = "Click a piece to move!" in
-  let check_prompt = "You're in check!" in
   let init_prompt =
     match color with
     | Piece.Types.White -> move_prompt
@@ -127,7 +129,11 @@ let prompt_layout color =
   let widget = Bogue.Widget.label ~size:20 init_prompt in
   let update_prompt () =
     let new_prompt =
-      if Turn.curr_turn () = color then
+      if Board.Chessboard.in_checkmate color !curr_board then defeat_prompt
+      else if
+        Board.Chessboard.in_checkmate (Piece.Types.opposite color) !curr_board
+      then won_prompt
+      else if Turn.curr_turn () = color then
         if put_in_check () then check_prompt else move_prompt
       else waiting_prompt
     in

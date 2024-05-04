@@ -225,6 +225,8 @@ let move_piece board color start finish =
             moves = new_move_record :: new_board.moves;
           }
 
+let in_checkmate color board = Check.in_checkmate color board.pieces_on_board
+
 exception No_moves_made
 
 let last_move board =

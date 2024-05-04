@@ -23,6 +23,9 @@ val move_piece :
     Raises: [Invalid_move] if the move isn't a valid one. Raises:
     [Puts_in_check] if the move would put [color] in check. *)
 
+val in_checkmate : Piece.Types.color -> t -> bool
+(** [in_checkmate color board] is whether [color] is checkmated on [board]. *)
+
 exception No_moves_made
 (** Raised if no moves have been made. *)
 

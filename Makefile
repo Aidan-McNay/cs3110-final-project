@@ -5,6 +5,11 @@
 
 .PHONY: bisect open_bisect
 
+.DEFAULT_GOAL := run
+
+clean:
+	dune clean
+
 build:
 	dune build
 
