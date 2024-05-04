@@ -10,16 +10,17 @@ type t = {
   metadata : Types.piece_metadata;
 }
 
+(** [get_metadata piece_type] is the metadata for [piece_type]. *)
+let get_metadata = function
+  | Types.Pawn -> Pawn.metadata
+  | Types.Knight -> Knight.metadata
+  | Types.Bishop -> Bishop.metadata
+  | Types.Rook -> Rook.metadata
+  | Types.Queen -> Queen.metadata
+  | Types.King -> King.metadata
+
 let init piece_type color location =
-  let metadata =
-    match piece_type with
-    | Types.Pawn -> Pawn.metadata
-    | Types.Knight -> Knight.metadata
-    | Types.Bishop -> Bishop.metadata
-    | Types.Rook -> Rook.metadata
-    | Types.Queen -> Queen.metadata
-    | Types.King -> King.metadata
-  in
+  let metadata = get_metadata piece_type in
   { color; piece_type; location; metadata }
 
 let get_type piece = piece.piece_type
@@ -29,8 +30,9 @@ let get_loc piece = piece.location
 let set_loc { color; piece_type; location = _; metadata } new_loc =
   { color; piece_type; location = new_loc; metadata }
 
-let set_type { color; piece_type = _; location; metadata } new_type =
-  { color; piece_type = new_type; location; metadata }
+let set_type { color; piece_type = _; location; metadata = _ } new_type =
+  let new_metadata = get_metadata new_type in
+  { color; piece_type = new_type; location; metadata = new_metadata }
 
 let get_points piece = piece.metadata.points
 

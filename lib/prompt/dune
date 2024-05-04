@@ -1,7 +1,7 @@
 (library
  (inline_tests)
- (name Board)
- (libraries Utils Piece Prompt bogue)
+ (name Prompt)
+ (libraries Piece bogue)
  (preprocess
   (pps ppx_inline_test))
  (instrumentation

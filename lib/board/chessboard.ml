@@ -145,6 +145,26 @@ let do_castle { pieces_on_board; captured_by_white; captured_by_black; moves }
     print_endline "Can't castle";
     raise Invalid_move)
 
+(** [promoted_piece piece] is [piece] after it's been promoted, prompting the
+    user for the new type. Evaluates to [piece] if [piece] shouldn't be
+    promoted. *)
+let promoted_piece piece =
+  if Piece.Pieces.get_type piece <> Piece.Types.Pawn then piece
+  else
+    let piece_color = Piece.Pieces.get_color piece in
+    let promotion_rank =
+      match piece_color with
+      | Piece.Types.White -> 8
+      | Piece.Types.Black -> 1
+    in
+    if Utils.Location.get_row (Piece.Pieces.get_loc piece) <> promotion_rank
+    then piece
+    else Piece.Pieces.set_type piece (Prompt.prompt_promotion piece_color)
+
+(** [promotion_check pieces] promotes any pawn in [pieces] that needs to be,
+    prompting the user if necessary. *)
+let promotion_check = List.map promoted_piece
+
 let move_piece board color start finish =
   match piece_at_loc board.pieces_on_board start with
   | None -> raise Invalid_move
@@ -154,10 +174,11 @@ let move_piece board color start finish =
       else if Bool.not (is_valid_move board piece finish) then
         raise Invalid_move
       else
-        let captured_board, captured_a_piece = capture_piece board finish in
+        let new_board, captured_a_piece = capture_piece board finish in
         let pieces_on_board =
-          move_piece_list captured_board.pieces_on_board start finish
+          move_piece_list new_board.pieces_on_board start finish
         in
+        let pieces_on_board = promotion_check pieces_on_board in
         if Check.in_check color pieces_on_board then raise Puts_in_check
         else
           let check_opp =
@@ -169,9 +190,9 @@ let move_piece board color start finish =
           in
           {
             pieces_on_board;
-            captured_by_white = captured_board.captured_by_white;
-            captured_by_black = captured_board.captured_by_black;
-            moves = new_move_record :: captured_board.moves;
+            captured_by_white = new_board.captured_by_white;
+            captured_by_black = new_board.captured_by_black;
+            moves = new_move_record :: new_board.moves;
           }
 
 exception No_moves_made
