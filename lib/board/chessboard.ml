@@ -145,11 +145,9 @@ let do_castle { pieces_on_board; captured_by_white; captured_by_black; moves }
     print_endline "Can't castle";
     raise Invalid_move)
 
-(** [promoted_piece piece] is [piece] after it's been promoted, prompting the
-    user for the new type. Evaluates to [piece] if [piece] shouldn't be
-    promoted. *)
-let promoted_piece piece =
-  if Piece.Pieces.get_type piece <> Piece.Types.Pawn then piece
+(** [should_promote piece] is whether [piece] needs to be promoted. *)
+let should_promote piece =
+  if Piece.Pieces.get_type piece <> Piece.Types.Pawn then false
   else
     let piece_color = Piece.Pieces.get_color piece in
     let promotion_rank =
@@ -158,12 +156,23 @@ let promoted_piece piece =
       | Piece.Types.Black -> 1
     in
     if Utils.Location.get_row (Piece.Pieces.get_loc piece) <> promotion_rank
-    then piece
-    else Piece.Pieces.set_type piece (Prompt.prompt_promotion piece_color)
+    then false
+    else true
 
-(** [promotion_check pieces] promotes any pawn in [pieces] that needs to be,
-    prompting the user if necessary. *)
-let promotion_check = List.map promoted_piece
+(** [promoted_piece piece] is [piece] after it's been promoted, prompting the
+    user for the new type. Evaluates to [piece] if [piece] shouldn't be
+    promoted. *)
+let promoted_piece piece =
+  let piece_color = Piece.Pieces.get_color piece in
+  if should_promote piece then
+    Piece.Pieces.set_type piece (Prompt.prompt_promotion piece_color)
+  else piece
+
+(** [promotion_check pieces] is [pieces] after promoting any pawn that needs to
+    be promoted, prompting the user if necessary, as well as whether a pawn was
+    promoted. *)
+let promotion_check pieces =
+  (List.map promoted_piece pieces, List.exists should_promote pieces)
 
 let move_piece board color start finish =
   match piece_at_loc board.pieces_on_board start with
@@ -178,7 +187,7 @@ let move_piece board color start finish =
         let pieces_on_board =
           move_piece_list new_board.pieces_on_board start finish
         in
-        let pieces_on_board = promotion_check pieces_on_board in
+        let pieces_on_board, promoted = promotion_check pieces_on_board in
         if Check.in_check color pieces_on_board then raise Puts_in_check
         else
           let check_opp =
@@ -186,7 +195,7 @@ let move_piece board color start finish =
           in
           let new_move_record =
             Move_record.gen_record piece start finish check_opp captured_a_piece
-              false false
+              false promoted
           in
           {
             pieces_on_board;
