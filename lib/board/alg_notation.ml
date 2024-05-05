@@ -100,6 +100,3 @@ let move_history_file filename moves =
   let oc = open_out filename in
   print_move_history oc moves;
   close_out oc
-
-(* Temporary fix to allow to build *)
-let () = ignore move_record_to_alg_notation
