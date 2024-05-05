@@ -10,10 +10,12 @@ let is_valid_move color start finish =
   in
   if curr_rank <> Utils.Location.get_row start then false
   else
-    let moves_start_to_finish moves =
-      Utils.Location.apply_moves start moves = finish
-    in
-    List.exists moves_start_to_finish possible_moves
+    try
+      let moves_start_to_finish moves =
+        Utils.Location.apply_moves start moves = finish
+      in
+      List.exists moves_start_to_finish possible_moves
+    with Utils.Location.Off_board -> false
 
 let is_en_passant color piece finish pieces =
   let start = Piece.Pieces.get_loc piece in
