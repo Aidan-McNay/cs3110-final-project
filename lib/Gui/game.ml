@@ -154,5 +154,4 @@ let game_layout color =
   in
   Bogue.Layout.disable_resize layout;
   Move_tracker.register_popup_layout tracker layout;
-  Prompt.set_layout color layout;
   layout
