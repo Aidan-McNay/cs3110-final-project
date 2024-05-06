@@ -1,13 +1,14 @@
 (* @author Aidan McNay (acm289) *)
 
 (** [is_king color piece] is whether [piece] is a king of color [color]. *)
-let is_king color piece =
-  Piece.Pieces.get_type piece = Piece.Types.King
-  && Piece.Pieces.get_color piece = color
+let is_king color piece_type piece_color =
+  piece_type = Piece.Types.King && piece_color = color
 
 let is_castle color piece finish =
   let start = Piece.Pieces.get_loc piece in
-  if Bool.not (is_king color piece) then false
+  let piece_type = Piece.Pieces.get_type piece in
+  let piece_color = Piece.Pieces.get_color piece in
+  if Bool.not (is_king color piece_type piece_color) then false
   else
     let king_rank =
       match color with
@@ -22,8 +23,9 @@ let is_castle color piece finish =
     king has already moved. *)
 let king_has_moved color records =
   let is_king_move record =
-    let piece = Move_record.get_piece record in
-    is_king color piece
+    let piece_type = Move_record.get_piece_type record in
+    let piece_color = Move_record.get_color record in
+    is_king color piece_type piece_color
   in
   List.exists is_king_move records
 
@@ -69,9 +71,14 @@ let rook_still_there color loc pieces records =
     && Piece.Pieces.get_loc piece = loc
   in
   let rook_at_loc = List.exists is_rook pieces in
+  let is_rook_record piece_type piece_color piece_loc =
+    piece_type = Piece.Types.Rook && piece_color = color && piece_loc = loc
+  in
   let is_rook_move record =
-    let piece = Move_record.get_piece record in
-    is_rook piece
+    let piece_type = Move_record.get_piece_type record in
+    let piece_color = Move_record.get_color record in
+    let piece_loc = Move_record.get_start record in
+    is_rook_record piece_type piece_color piece_loc
   in
   let rook_has_not_moved = Bool.not (List.exists is_rook_move records) in
   rook_at_loc && rook_has_not_moved
@@ -145,7 +152,13 @@ let castle color pieces start finish records =
       pieces |> move_piece start finish |> move_piece rook_start rook_finish
     in
     let is_check = Check.in_check (Piece.Types.opposite color) new_pieces in
+    let is_checkmate =
+      Check.in_checkmate (Piece.Types.opposite color) new_pieces
+    in
+    let color = Piece.Pieces.get_color king_piece in
+    let alg_not = Alg_notation.castling_to_notation start finish color in
     let record =
-      Move_record.gen_record king_piece start finish is_check false true None
+      Move_record.gen_record Piece.Types.King color start finish is_check false
+        true None is_checkmate alg_not
     in
     (new_pieces, record)

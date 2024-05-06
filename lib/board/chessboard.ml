@@ -112,6 +112,8 @@ let capture_piece board loc =
         true )
   | None -> (board, false)
 
+(** [is_valid_move board piece new_loc] is whether moving [piece] to [new_loc]
+    on [board] is a valid move. *)
 let is_valid_move board piece new_loc =
   let curr_loc = Piece.Pieces.get_loc piece in
   let valid_moves = Piece.Pieces.get_valid_moves piece board.pieces_on_board in
@@ -192,17 +194,27 @@ let promotion_check pieces =
 
 exception Invalid_promotion
 
-(** [promoted_to board promoted finish] is if [promoted] is true returns the
-    piece_type option at location [finish] on [board] else returns None. If
-    [promoted] is true, there has to be a piece at [finish] otherwise raises
-    error [Invalid_promotion]*)
-let promoted_to board promoted finish =
+(** [promoted_to pieces promoted finish] is if [promoted] is true returns the
+    piece_type option at location [finish] from the list [pieces] else returns
+    None. If [promoted] is true, there has to be a piece at [finish] otherwise
+    raises error [Invalid_promotion]*)
+let promoted_to pieces promoted finish =
   if promoted then
     Some
-      (match Piece.Pieces.(piece_at_loc board.pieces_on_board finish) with
+      (match Piece.Pieces.(piece_at_loc pieces finish) with
       | Some piece -> Piece.Pieces.get_type piece
       | None -> raise Invalid_promotion)
   else None
+
+(** [ambig board piece finish] returns a list of pieces in [board] that are of
+    the same piece type as [piece] and that could have move to [finish]*)
+let ambig board piece finish =
+  List.filter
+    (fun pc ->
+      Piece.Pieces.get_type pc = Piece.Pieces.get_type piece
+      && is_valid_move board pc finish
+      && Piece.Pieces.get_loc piece <> Piece.Pieces.get_loc pc)
+    board.pieces_on_board
 
 let move_piece board color start finish =
   match Piece.Pieces.piece_at_loc board.pieces_on_board start with
@@ -221,15 +233,25 @@ let move_piece board color start finish =
           move_piece_list new_board.pieces_on_board start finish
         in
         let pieces_on_board, promoted = promotion_check pieces_on_board in
-        let promoted_type = promoted_to board promoted finish in
         if Check.in_check color pieces_on_board then raise Puts_in_check
         else
           let check_opp =
             Check.in_check (Piece.Types.opposite color) pieces_on_board
           in
+          let checkmate_opp =
+            Check.in_checkmate (Piece.Types.opposite color) pieces_on_board
+          in
+          let promoted_type = promoted_to pieces_on_board promoted finish in
+          let ambig = ambig board piece finish in
+          let piece_type = Piece.Pieces.get_type piece in
+          let color = Piece.Pieces.get_color piece in
+          let alg_not =
+            Alg_notation.move_record_to_alg_notation ambig piece_type start
+              finish check_opp captured_a_piece promoted_type checkmate_opp
+          in
           let new_move_record =
-            Move_record.gen_record piece start finish check_opp captured_a_piece
-              false promoted_type
+            Move_record.gen_record piece_type color start finish check_opp
+              captured_a_piece false promoted_type checkmate_opp alg_not
           in
           {
             pieces_on_board;
@@ -291,5 +313,3 @@ let image_at_loc ?(selected = false) board loc bg =
       Bogue.Widget.box ~w:50 ~h:50
         ~style:(Bogue.Style.of_bg (Bogue.Style.Solid bg))
         ()
-
-let get_pieces_on_board board = board.pieces_on_board

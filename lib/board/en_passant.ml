@@ -29,11 +29,11 @@ let is_en_passant color piece finish pieces =
 (** [pawn_moved_two record] is whether [record] represents a movement of a pawn
     by two spaces. *)
 let pawn_moved_two record =
-  let piece = Move_record.get_piece record in
-  if Piece.Pieces.get_type piece <> Piece.Types.Pawn then false
+  let piece_type = Move_record.get_piece_type record in
+  if piece_type <> Piece.Types.Pawn then false
   else
     let start_row, end_row =
-      match Piece.Pieces.get_color piece with
+      match Move_record.get_color record with
       | Piece.Types.White -> (2, 4)
       | Piece.Types.Black -> (7, 5)
     in
@@ -106,8 +106,13 @@ let en_passant color pieces start finish records =
             pieces_without_target
         in
         let is_check = Check.in_check (Piece.Types.opposite color) new_pieces in
+        let is_checkmate =
+          Check.in_checkmate (Piece.Types.opposite color) new_pieces
+        in
+        let color = Piece.Pieces.get_color pawn_to_move in
+        let alg_not = Alg_notation.en_passant_to_notation start finish in
         let record =
-          Move_record.gen_record pawn_to_move start finish is_check true false
-            None
+          Move_record.gen_record Piece.Types.Pawn color start finish is_check
+            true false None is_checkmate alg_not
         in
         (new_pieces, record, pawn_to_remove)
