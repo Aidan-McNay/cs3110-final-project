@@ -6,6 +6,10 @@ type t
 val initial : t
 (** [initial] is the initial setup for a chess game. *)
 
+val mk_board : Piece.Pieces.t list -> Move_record.t list -> t
+(** [mk_board pieces records] is a board representation of a game with [pieces]
+    on board and [records] representing the moves already made. *)
+
 val get_points : t -> Piece.Pieces.color -> int
 (** [get_points board color] gets the points of pieces that the [color] player
     has captured on [board]. *)
@@ -20,8 +24,7 @@ val move_piece :
   t -> Piece.Types.color -> Utils.Location.t -> Utils.Location.t -> t
 (** [move_piece board color start finish] is [board] after [color] moves the
     piece at [start] to [finish], capturing a piece on [finish] if necessary.
-    Raises: [Invalid_move] if the move isn't a valid one. Raises:
-    [Puts_in_check] if the move would put [color] in check. *)
+    Raises: [Invalid_move] if the move isn't a valid one. *)
 
 val in_checkmate : Piece.Types.color -> t -> bool
 (** [in_checkmate color board] is whether [color] is checkmated on [board]. *)
@@ -44,6 +47,3 @@ val image_at_loc :
   ?selected:bool -> t -> Utils.Location.t -> Bogue.Draw.color -> Bogue.Widget.t
 (** [image_at_loc board loc bg] is the image of a piece on [board] at [loc] with
     background [bg]. The image is only the background if no piece is present. *)
-
-
-

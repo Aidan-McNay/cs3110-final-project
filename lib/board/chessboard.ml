@@ -62,6 +62,14 @@ let initial =
     moves = [];
   }
 
+let mk_board pieces records =
+  {
+    pieces_on_board = pieces;
+    captured_by_white = [];
+    captured_by_black = [];
+    moves = records;
+  }
+
 (** [get_piece_points pieces] is the cumulative number of points that the pieces
     in [pieces] are worth. *)
 let get_piece_points pieces =
@@ -207,7 +215,7 @@ let promoted_to pieces promoted finish =
   else None
 
 (** [ambig board piece finish] returns a list of pieces in [board] that are of
-    the same piece type as [piece] and that could have move to [finish]*)
+    the same piece type as [piece] and that could have move to [finish]. *)
 let ambig board piece finish =
   List.filter
     (fun pc ->
