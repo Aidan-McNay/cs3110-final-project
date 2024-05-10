@@ -111,11 +111,11 @@ let do_castle { pieces_on_board; captured_by_white; captured_by_black; moves }
     en_passant from [start] to [finish]. Requires: [color] moving a piece from
     [start] to [finish] represents a castle. *)
 let do_en_passant
-    { pieces_on_board; captured_by_white; captured_by_black; moves } color start
+    { pieces_on_board; captured_by_white; captured_by_black; moves } color piece
     finish =
-  if En_passant.can_en_passant color start finish pieces_on_board moves then
+  if En_passant.can_en_passant color piece finish moves then
     let new_pieces, new_record, captured_piece =
-      En_passant.en_passant color pieces_on_board start finish moves
+      En_passant.en_passant color pieces_on_board piece finish moves
     in
     let captured_by_white, captured_by_black =
       match color with
@@ -193,7 +193,7 @@ let move_piece board color start finish =
       else if Castle.is_castle color piece finish then
         do_castle board color start finish
       else if En_passant.is_en_passant color piece finish board.pieces_on_board
-      then do_en_passant board color start finish
+      then do_en_passant board color piece finish
       else if Bool.not (is_valid_move board piece finish) then
         raise Invalid_move
       else

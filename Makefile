@@ -3,7 +3,7 @@
 
 .SILENT:
 
-.PHONY: bisect open_bisect
+.PHONY: bisect open_bisect clean build run test
 
 .DEFAULT_GOAL := run
 
