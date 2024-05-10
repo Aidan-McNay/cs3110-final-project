@@ -52,6 +52,44 @@ let piece_at_loc piece_list loc =
   let piece_at_loc piece = get_loc piece = loc in
   List.find_opt piece_at_loc piece_list
 
+let start_state =
+  [
+    (* White *)
+    init Rook White (Utils.Location.init_loc 'A' 1);
+    init Knight White (Utils.Location.init_loc 'B' 1);
+    init Bishop White (Utils.Location.init_loc 'C' 1);
+    init Queen White (Utils.Location.init_loc 'D' 1);
+    init King White (Utils.Location.init_loc 'E' 1);
+    init Bishop White (Utils.Location.init_loc 'F' 1);
+    init Knight White (Utils.Location.init_loc 'G' 1);
+    init Rook White (Utils.Location.init_loc 'H' 1);
+    init Pawn White (Utils.Location.init_loc 'A' 2);
+    init Pawn White (Utils.Location.init_loc 'B' 2);
+    init Pawn White (Utils.Location.init_loc 'C' 2);
+    init Pawn White (Utils.Location.init_loc 'D' 2);
+    init Pawn White (Utils.Location.init_loc 'E' 2);
+    init Pawn White (Utils.Location.init_loc 'F' 2);
+    init Pawn White (Utils.Location.init_loc 'G' 2);
+    init Pawn White (Utils.Location.init_loc 'H' 2);
+    (* Black *)
+    init Rook Black (Utils.Location.init_loc 'A' 8);
+    init Knight Black (Utils.Location.init_loc 'B' 8);
+    init Bishop Black (Utils.Location.init_loc 'C' 8);
+    init Queen Black (Utils.Location.init_loc 'D' 8);
+    init King Black (Utils.Location.init_loc 'E' 8);
+    init Bishop Black (Utils.Location.init_loc 'F' 8);
+    init Knight Black (Utils.Location.init_loc 'G' 8);
+    init Rook Black (Utils.Location.init_loc 'H' 8);
+    init Pawn Black (Utils.Location.init_loc 'A' 7);
+    init Pawn Black (Utils.Location.init_loc 'B' 7);
+    init Pawn Black (Utils.Location.init_loc 'C' 7);
+    init Pawn Black (Utils.Location.init_loc 'D' 7);
+    init Pawn Black (Utils.Location.init_loc 'E' 7);
+    init Pawn Black (Utils.Location.init_loc 'F' 7);
+    init Pawn Black (Utils.Location.init_loc 'G' 7);
+    init Pawn Black (Utils.Location.init_loc 'H' 7);
+  ]
+
 (** [to_string_black piece] is the string representation of [piece], assuming
     that the piece is Black. *)
 let to_string_black piece =

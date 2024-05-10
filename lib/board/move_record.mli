@@ -11,16 +11,16 @@ val gen_record :
   bool ->
   bool ->
   bool ->
-  Piece.Types.piece_type option->
+  Piece.Types.piece_type option ->
   bool ->
   string ->
   t
-(** [gen_record piece start finish is_check capture castled promoted checkmate alg_notation] is a
-    record of [piece] moving from [start] to [finish], where [is_check] is
+(** [gen_record piece start finish is_check capture castled promoted checkmate alg_notation]
+    is a record of [piece] moving from [start] to [finish], where [is_check] is
     whether it placed the opponent in check, [captured_a_piece] is whether a
-    piece was captured, [castled] is whether this piece castled, [promoted]
-    is whether this move involved a promotion, [checkmate] is whether it placed the 
-    opponent in checkmate and [alg_notation] is the string representation of the 
+    piece was captured, [castled] is whether this piece castled, [promoted] is
+    whether this move involved a promotion, [checkmate] is whether it placed the
+    opponent in checkmate and [alg_notation] is the string representation of the
     move in English Standard Algebraic Notation. *)
 
 val get_piece_type : t -> Piece.Types.piece_type
@@ -46,10 +46,10 @@ val was_promotion : t -> Piece.Types.piece_type option
 
 val get_alg_not : t -> string
 (** [get_alg_not record] is the representation of the [record] in English
-    Standard Algebraic Information*)
+    Standard Algebraic Information. *)
 
 val get_color : t -> Piece.Types.color
-(** [get_color record] is the color of the piece that moved in [record]*)
+(** [get_color record] is the color of the piece that moved in [record]. *)
 
 val get_checkmate : t -> bool
-(** [get_checkmate record] is whether the move in [record] was checkmate*)
+(** [get_checkmate record] is whether the move in [record] was checkmate. *)

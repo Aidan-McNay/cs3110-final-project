@@ -38,6 +38,9 @@ val get_valid_moves : t -> t list -> Utils.Move.moves list
 val piece_at_loc : t list -> Utils.Location.t -> t option
 (** [piece_at_loc piece_list loc] is the piece in [piece_list] at [loc], if any. *)
 
+val start_state : t list
+(** [start_state] is a list of the pieces on a board at the start of a game. *)
+
 val to_string : t -> string
 (** [to_string piece] is the string representation of [piece]. *)
 
@@ -46,8 +49,8 @@ val to_image : t -> Bogue.Draw.color -> Bogue.Widget.t
     [bg]. *)
 
 val to_algebraic_notation : piece_type -> string
-(** [to_algebraic_notation piece_type] is the string representation of [piece_type] using the
-    English Standard Algebraic Notation of Chess*)
+(** [to_algebraic_notation piece_type] is the string representation of
+    [piece_type] using the English Standard Algebraic Notation of Chess*)
 
 val alg_notation_to_piece_type : char -> piece_type
 (** [to_alg_notation_to_piece_type] takes the algebraic notation character

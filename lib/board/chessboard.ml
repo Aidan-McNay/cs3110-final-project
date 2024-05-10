@@ -15,48 +15,9 @@ type t = {
 (* RI: The location must be a valid chess board location; [row] and [column]
    must be between 1 and 8, inclusive. *)
 
-let start_pieces_list =
-  Piece.Pieces.
-    [
-      (* White *)
-      init Rook White (Utils.Location.init_loc 'A' 1);
-      init Knight White (Utils.Location.init_loc 'B' 1);
-      init Bishop White (Utils.Location.init_loc 'C' 1);
-      init Queen White (Utils.Location.init_loc 'D' 1);
-      init King White (Utils.Location.init_loc 'E' 1);
-      init Bishop White (Utils.Location.init_loc 'F' 1);
-      init Knight White (Utils.Location.init_loc 'G' 1);
-      init Rook White (Utils.Location.init_loc 'H' 1);
-      init Pawn White (Utils.Location.init_loc 'A' 2);
-      init Pawn White (Utils.Location.init_loc 'B' 2);
-      init Pawn White (Utils.Location.init_loc 'C' 2);
-      init Pawn White (Utils.Location.init_loc 'D' 2);
-      init Pawn White (Utils.Location.init_loc 'E' 2);
-      init Pawn White (Utils.Location.init_loc 'F' 2);
-      init Pawn White (Utils.Location.init_loc 'G' 2);
-      init Pawn White (Utils.Location.init_loc 'H' 2);
-      (* Black *)
-      init Rook Black (Utils.Location.init_loc 'A' 8);
-      init Knight Black (Utils.Location.init_loc 'B' 8);
-      init Bishop Black (Utils.Location.init_loc 'C' 8);
-      init Queen Black (Utils.Location.init_loc 'D' 8);
-      init King Black (Utils.Location.init_loc 'E' 8);
-      init Bishop Black (Utils.Location.init_loc 'F' 8);
-      init Knight Black (Utils.Location.init_loc 'G' 8);
-      init Rook Black (Utils.Location.init_loc 'H' 8);
-      init Pawn Black (Utils.Location.init_loc 'A' 7);
-      init Pawn Black (Utils.Location.init_loc 'B' 7);
-      init Pawn Black (Utils.Location.init_loc 'C' 7);
-      init Pawn Black (Utils.Location.init_loc 'D' 7);
-      init Pawn Black (Utils.Location.init_loc 'E' 7);
-      init Pawn Black (Utils.Location.init_loc 'F' 7);
-      init Pawn Black (Utils.Location.init_loc 'G' 7);
-      init Pawn Black (Utils.Location.init_loc 'H' 7);
-    ]
-
 let initial =
   {
-    pieces_on_board = start_pieces_list;
+    pieces_on_board = Piece.Pieces.start_state;
     captured_by_white = [];
     captured_by_black = [];
     moves = [];
@@ -252,7 +213,6 @@ let move_piece board color start finish =
           let promoted_type = promoted_to pieces_on_board promoted finish in
           let ambig = ambig board piece finish in
           let piece_type = Piece.Pieces.get_type piece in
-          let color = Piece.Pieces.get_color piece in
           let alg_not =
             Alg_notation.move_record_to_alg_notation ambig piece_type start
               finish check_opp captured_a_piece promoted_type checkmate_opp
