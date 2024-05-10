@@ -17,24 +17,19 @@ let en_passant_board_state white_start black_start =
 (** [en_passant_history start finish] is a list with a move record where a pawn
     moved from [start] to [finish]. *)
 let en_passant_history start finish color =
-  let alg_not =
-    Board.Alg_notation.move_record_to_alg_notation [] Piece.Types.Pawn start
-      finish false false None false
-  in
   Piece.Types.
     [
       Board.Move_record.gen_record Pawn color start finish false false false
-        None false alg_not;
+        None false false;
     ]
 
 (** [valid_en_passant_move start finish] is a test for a valid en passant move
     from [start] to [finish] *)
 let valid_en_passant_move name color start finish =
-  let alg_not = Board.Alg_notation.en_passant_to_notation start finish in
   let expected_record =
     Piece.Types.(
       Board.Move_record.gen_record Pawn color start finish false true false None
-        false alg_not)
+        false true)
   in
   (name, color, start, finish, Test_utils.Record expected_record)
 
@@ -216,14 +211,10 @@ module NotAPawnTest : Test_utils.BoardTest = struct
   let target_init = Utils.Location.init_loc 'D' 7
 
   let history =
-    let alg_not =
-      Board.Alg_notation.move_record_to_alg_notation [] Piece.Types.Rook
-        target_init target_start false false None false
-    in
     Piece.Types.
       [
         Board.Move_record.gen_record Rook Black target_init target_start false
-          false false None false alg_not;
+          false false None false false;
       ]
 
   let moves_to_test =

@@ -95,9 +95,8 @@ let en_passant color pieces pawn_to_move finish _ =
     Check.in_checkmate (Piece.Types.opposite color) new_pieces
   in
   let color = Piece.Pieces.get_color pawn_to_move in
-  let alg_not = Alg_notation.en_passant_to_notation start finish in
   let record =
     Move_record.gen_record Piece.Types.Pawn color start finish is_check true
-      false None is_checkmate alg_not
+      false None is_checkmate true
   in
   (new_pieces, record, pawn_to_remove)

@@ -6,13 +6,9 @@ open OUnit2
     basic move of a [piece_type] piece of color [color] from [start] to [finish]
     on the initial board. *)
 let mk_basic_record piece_type color start finish =
-  let alg_not =
-    Board.Alg_notation.move_record_to_alg_notation [] piece_type start finish
-      false false None false
-  in
   Test_utils.Record
     (Board.Move_record.gen_record piece_type color start finish false false
-       false None false alg_not)
+       false None false false)
 
 type piece_move =
   string

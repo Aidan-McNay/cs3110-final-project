@@ -47,7 +47,7 @@ let compare_records rec1 rec2 =
       compare_rec_attr Board.Move_record.was_capture;
       compare_rec_attr Board.Move_record.was_castle;
       compare_rec_attr Board.Move_record.was_promotion;
-      compare_rec_attr Board.Move_record.get_alg_not;
+      compare_rec_attr Board.Move_record.get_en_passant;
       compare_rec_attr Board.Move_record.get_color;
       compare_rec_attr Board.Move_record.get_checkmate;
     ]
@@ -57,7 +57,7 @@ let compare_records rec1 rec2 =
 (** A functor for testing the given moves in a [BoardTest] module. *)
 module BoardTester (Test : BoardTest) = struct
   (** [board_to_test] is the board we want to test, given by [Test]*)
-  let board_to_test = Board.Chessboard.mk_board Test.board_state Test.history
+  let board_to_test = Board.Chessboard.mk_board Test.board_state Test.history []
 
   (** [get_new_record color start finish] gets the record from the [color]
       player moving a piece from [start] to [finish] on the board under test. *)
@@ -74,7 +74,8 @@ module BoardTester (Test : BoardTest) = struct
     | Record r ->
         assert_equal r
           (get_new_record color start finish)
-          ~cmp:compare_records ~printer:Board.Move_record.get_alg_not
+          ~cmp:compare_records
+          ~printer:(Board.Alg_notation.move_record_to_alg_notation [])
     | Invalid ->
         assert_raises Board.Chessboard.Invalid_move (fun () ->
             get_new_record color start finish)

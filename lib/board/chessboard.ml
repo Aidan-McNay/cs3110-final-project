@@ -5,6 +5,7 @@ type t = {
   captured_by_white : Piece.Pieces.t list;
   captured_by_black : Piece.Pieces.t list;
   moves : Move_record.t list;
+  alg_notation : string list;
 }
 
 (* AF: The record [{pieces_on_board = p; captured_by_white = w;
@@ -21,14 +22,16 @@ let initial =
     captured_by_white = [];
     captured_by_black = [];
     moves = [];
+    alg_notation = [];
   }
 
-let mk_board pieces records =
+let mk_board pieces records alg_nots =
   {
     pieces_on_board = pieces;
     captured_by_white = [];
     captured_by_black = [];
     moves = records;
+    alg_notation = alg_nots;
   }
 
 (** [get_piece_points pieces] is the cumulative number of points that the pieces
@@ -77,6 +80,7 @@ let capture_piece board loc =
           captured_by_white;
           captured_by_black;
           moves = board.moves;
+          alg_notation = board.alg_notation;
         },
         true )
   | None -> (board, false)
@@ -93,8 +97,14 @@ let is_valid_move board piece new_loc =
 (** [do_castle board color start finish] is [board] after [color] castles from
     [start] to [finish]. Requires: [color] moving a piece from [start] to
     [finish] represents a castle. *)
-let do_castle { pieces_on_board; captured_by_white; captured_by_black; moves }
-    color start finish =
+let do_castle
+    {
+      pieces_on_board;
+      captured_by_white;
+      captured_by_black;
+      moves;
+      alg_notation;
+    } color start finish =
   if Castle.can_castle color start finish pieces_on_board moves then
     let new_pieces, new_record =
       Castle.castle color pieces_on_board start finish moves
@@ -104,6 +114,8 @@ let do_castle { pieces_on_board; captured_by_white; captured_by_black; moves }
       captured_by_white;
       captured_by_black;
       moves = new_record :: moves;
+      alg_notation =
+        Alg_notation.move_record_to_alg_notation [] new_record :: alg_notation;
     }
   else raise Invalid_move
 
@@ -111,8 +123,13 @@ let do_castle { pieces_on_board; captured_by_white; captured_by_black; moves }
     en_passant from [start] to [finish]. Requires: [color] moving a piece from
     [start] to [finish] represents a castle. *)
 let do_en_passant
-    { pieces_on_board; captured_by_white; captured_by_black; moves } color piece
-    finish =
+    {
+      pieces_on_board;
+      captured_by_white;
+      captured_by_black;
+      moves;
+      alg_notation;
+    } color piece finish =
   if En_passant.can_en_passant color piece finish moves then
     let new_pieces, new_record, captured_piece =
       En_passant.en_passant color pieces_on_board piece finish moves
@@ -129,6 +146,8 @@ let do_en_passant
       captured_by_white;
       captured_by_black;
       moves = new_record :: moves;
+      alg_notation =
+        Alg_notation.move_record_to_alg_notation [] new_record :: alg_notation;
     }
   else raise Invalid_move
 
@@ -213,19 +232,20 @@ let move_piece board color start finish =
           let promoted_type = promoted_to pieces_on_board promoted finish in
           let ambig = ambig board piece finish in
           let piece_type = Piece.Pieces.get_type piece in
-          let alg_not =
-            Alg_notation.move_record_to_alg_notation ambig piece_type start
-              finish check_opp captured_a_piece promoted_type checkmate_opp
-          in
+          let color = Piece.Pieces.get_color piece in
           let new_move_record =
             Move_record.gen_record piece_type color start finish check_opp
-              captured_a_piece false promoted_type checkmate_opp alg_not
+              captured_a_piece false promoted_type checkmate_opp false
+          in
+          let new_alg_not =
+            Alg_notation.move_record_to_alg_notation ambig new_move_record
           in
           {
             pieces_on_board;
             captured_by_white = new_board.captured_by_white;
             captured_by_black = new_board.captured_by_black;
             moves = new_move_record :: new_board.moves;
+            alg_notation = new_alg_not :: new_board.alg_notation;
           }
 
 let in_checkmate color board = Check.in_checkmate color board.pieces_on_board
@@ -281,3 +301,5 @@ let image_at_loc ?(selected = false) board loc bg =
       Bogue.Widget.box ~w:50 ~h:50
         ~style:(Bogue.Style.of_bg (Bogue.Style.Solid bg))
         ()
+
+let get_rev_alg_notation board = List.rev board.alg_notation

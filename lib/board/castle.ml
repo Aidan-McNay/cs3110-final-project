@@ -156,9 +156,8 @@ let castle color pieces start finish records =
       Check.in_checkmate (Piece.Types.opposite color) new_pieces
     in
     let color = Piece.Pieces.get_color king_piece in
-    let alg_not = Alg_notation.castling_to_notation start finish color in
     let record =
       Move_record.gen_record Piece.Types.King color start finish is_check false
-        true None is_checkmate alg_not
+        true None is_checkmate false
     in
     (new_pieces, record)
