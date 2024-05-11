@@ -30,7 +30,7 @@ module ValidWhiteCastleKingSideTest : Test_utils.BoardTest = struct
   (** [king_start] is the starting location of the king. *)
   let king_start = Utils.Location.init_loc 'E' 1
 
-  (** [king_finish] is the starting location of the king. *)
+  (** [king_finish] is the ending location of the king. *)
   let king_finish = Utils.Location.init_loc 'G' 1
 
   (** [rook_start] is the starting location of the rook. *)
@@ -57,7 +57,7 @@ module ValidBlackCastleQueenSideTest : Test_utils.BoardTest = struct
   (** [king_start] is the starting location of the king. *)
   let king_start = Utils.Location.init_loc 'E' 8
 
-  (** [king_finish] is the starting location of the king. *)
+  (** [king_finish] is the ending location of the king. *)
   let king_finish = Utils.Location.init_loc 'C' 8
 
   (** [rook_start] is the starting location of the rook. *)
@@ -83,7 +83,7 @@ module NoRookTest : Test_utils.BoardTest = struct
   (** [king_start] is the starting location of the king. *)
   let king_start = Utils.Location.init_loc 'E' 8
 
-  (** [king_finish] is the starting location of the king. *)
+  (** [king_finish] is the ending location of the king. *)
   let king_finish = Utils.Location.init_loc 'C' 8
 
   (** [other_king_start] is the starting location of the other king. *)
@@ -124,7 +124,7 @@ module KingMovedTest : Test_utils.BoardTest = struct
   (** [king_start] is the starting location of the king. *)
   let king_start = Utils.Location.init_loc 'E' 1
 
-  (** [king_finish] is the starting location of the king. *)
+  (** [king_finish] is the ending location of the king. *)
   let king_finish = Utils.Location.init_loc 'G' 1
 
   (** [rook_start] is the starting location of the rook. *)
@@ -158,7 +158,7 @@ module RookMovedTest : Test_utils.BoardTest = struct
   (** [king_start] is the starting location of the king. *)
   let king_start = Utils.Location.init_loc 'E' 1
 
-  (** [king_finish] is the starting location of the king. *)
+  (** [king_finish] is the ending location of the king. *)
   let king_finish = Utils.Location.init_loc 'G' 1
 
   (** [rook_start] is the starting location of the rook. *)
@@ -191,7 +191,7 @@ module InCheckTest : Test_utils.BoardTest = struct
   (** [king_start] is the starting location of the king. *)
   let king_start = Utils.Location.init_loc 'E' 1
 
-  (** [king_finish] is the starting location of the king. *)
+  (** [king_finish] is the ending location of the king. *)
   let king_finish = Utils.Location.init_loc 'G' 1
 
   (** [rook_start] is the starting location of the rook. *)
@@ -226,7 +226,7 @@ module ThroughCheckTest : Test_utils.BoardTest = struct
   (** [king_start] is the starting location of the king. *)
   let king_start = Utils.Location.init_loc 'E' 1
 
-  (** [king_finish] is the starting location of the king. *)
+  (** [king_finish] is the ending location of the king. *)
   let king_finish = Utils.Location.init_loc 'C' 1
 
   (** [rook_start] is the starting location of the rook. *)

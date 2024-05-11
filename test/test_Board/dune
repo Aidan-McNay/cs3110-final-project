@@ -1,3 +1,9 @@
 (tests
- (names test_Basic test_Notation test_enPassant test_castle)
+ (names
+  test_basic
+  test_notation
+  test_enPassant
+  test_castle
+  test_capture
+  test_check)
  (libraries ounit2 Board Piece Utils))

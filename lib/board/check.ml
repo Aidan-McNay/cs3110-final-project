@@ -8,8 +8,8 @@ let get_king color pieces =
   in
   match List.filter is_king pieces with
   | [ k ] -> k
-  | [] -> failwith "No king detected"
-  | _ :: _ -> failwith "Multiple kings detected"
+  | [] -> failwith "No king detected" [@coverage off]
+  | _ :: _ -> failwith "Multiple kings detected" [@coverage off]
 
 (** [can_take_king king pieces piece] is whether [piece] can take [king] on a
     board with [pieces]. *)
@@ -37,13 +37,16 @@ let can_fix_check color pieces piece =
     let curr_loc = Piece.Pieces.get_loc piece in
     let moves_fix_check moves =
       let new_loc = Utils.Location.apply_moves curr_loc moves in
+      let captured_pieces =
+        List.filter (fun piece -> Piece.Pieces.get_loc piece <> new_loc) pieces
+      in
       let new_pieces =
         List.map
           (fun piece ->
             if Piece.Pieces.get_loc piece = curr_loc then
               Piece.Pieces.set_loc piece new_loc
             else piece)
-          pieces
+          captured_pieces
       in
       Bool.not (in_check color new_pieces)
     in

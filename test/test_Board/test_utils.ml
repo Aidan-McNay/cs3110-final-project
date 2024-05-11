@@ -14,6 +14,33 @@ type test =
     a test with name [name], indicating that [color] moving a piece from [start]
     to [finish] should have outcome [outcome]. *)
 
+(** [intermediate_board] is an intermediate board state, representing a game
+    part-way done. It can be viewed at
+    https://lichess.org/editor/2b5/4Bpbp/7r/p1Np4/2p2P1P/5P1p/1k1P4/1B3R1K_w_-_-_0_1?color=white *)
+let intermediate_board =
+  Piece.Pieces.
+    [
+      init Bishop White (Utils.Location.init_loc 'B' 1);
+      init Rook White (Utils.Location.init_loc 'F' 1);
+      init King White (Utils.Location.init_loc 'H' 1);
+      init King Black (Utils.Location.init_loc 'B' 2);
+      init Pawn White (Utils.Location.init_loc 'D' 2);
+      init Pawn White (Utils.Location.init_loc 'F' 3);
+      init Pawn Black (Utils.Location.init_loc 'H' 3);
+      init Pawn Black (Utils.Location.init_loc 'C' 4);
+      init Pawn White (Utils.Location.init_loc 'F' 4);
+      init Pawn White (Utils.Location.init_loc 'H' 4);
+      init Pawn Black (Utils.Location.init_loc 'A' 5);
+      init Knight White (Utils.Location.init_loc 'C' 5);
+      init Pawn Black (Utils.Location.init_loc 'D' 5);
+      init Rook Black (Utils.Location.init_loc 'H' 6);
+      init Bishop White (Utils.Location.init_loc 'E' 7);
+      init Pawn Black (Utils.Location.init_loc 'F' 7);
+      init Bishop Black (Utils.Location.init_loc 'G' 7);
+      init Pawn Black (Utils.Location.init_loc 'H' 7);
+      init Bishop Black (Utils.Location.init_loc 'C' 8);
+    ]
+
 (** The type of module for providing inputs to test a board's move *)
 module type BoardTest = sig
   val board_state : Piece.Pieces.t list
