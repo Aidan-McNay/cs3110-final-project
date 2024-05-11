@@ -7,8 +7,9 @@ val initial : t
 (** [initial] is the initial setup for a chess game. *)
 
 val mk_board : Piece.Pieces.t list -> Move_record.t list -> string list -> t
-(** [mk_board pieces records alg_nots] is a board representation of a game with [pieces]
-    on board, [records] and [alg_nots] representing the moves already made. *)
+(** [mk_board pieces records alg_nots] is a board representation of a game with
+    [pieces] on board, [records] and [alg_nots] representing the moves already
+    made. *)
 
 val get_points : t -> Piece.Pieces.color -> int
 (** [get_points board color] gets the points of pieces that the [color] player
@@ -50,5 +51,5 @@ val image_at_loc :
 
 val get_rev_alg_notation : t -> string list
 (** [get_alg_notation board] is the complete move history of [board] in Standard
-    English Algebraic Notation for Chess. The most recent move is at 
-    the end of the list. *)
+    English Algebraic Notation for Chess. The most recent move is at the end of
+    the list. *)

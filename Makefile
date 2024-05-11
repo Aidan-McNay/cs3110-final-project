@@ -10,13 +10,13 @@
 clean:
 	dune clean
 
-build:
+build: clean
 	dune build
 
 run: build
 	dune exec bin/main.exe
 
-test:
+test: build
 	dune test --force
 
 bisect:
@@ -26,6 +26,10 @@ bisect:
 
 open-bisect: bisect
 	open _coverage/index.html
+
+format: clean
+	dune build @fmt
+	dune promote
 
 line-check:
 	cloc --by-file --include-lang=OCaml .

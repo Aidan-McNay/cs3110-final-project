@@ -1,3 +1,5 @@
+(* @author Aidan McNay (acm289) *)
+
 (** [start] initializes a new game of chess with the board in its initial setup
     and starts the game loop. *)
 let start_gui () =
