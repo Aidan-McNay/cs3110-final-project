@@ -104,10 +104,10 @@ let do_castle
       captured_by_black;
       moves;
       alg_notation;
-    } color start finish =
-  if Castle.can_castle color start finish pieces_on_board moves then
+    } color piece finish =
+  if Castle.can_castle color piece finish pieces_on_board moves then
     let new_pieces, new_record =
-      Castle.castle color pieces_on_board start finish moves
+      Castle.castle color pieces_on_board piece finish moves
     in
     {
       pieces_on_board = new_pieces;
@@ -210,7 +210,7 @@ let move_piece board color start finish =
   | Some piece ->
       if color <> Piece.Pieces.get_color piece then raise Invalid_move
       else if Castle.is_castle color piece finish then
-        do_castle board color start finish
+        do_castle board color piece finish
       else if En_passant.is_en_passant color piece finish board.pieces_on_board
       then do_en_passant board color piece finish
       else if Bool.not (is_valid_move board piece finish) then

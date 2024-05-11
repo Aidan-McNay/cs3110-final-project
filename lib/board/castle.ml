@@ -36,7 +36,7 @@ let in_between_loc start finish =
   match Utils.Location.get_col finish with
   | 'G' -> Utils.Location.init_loc 'F' rank
   | 'C' -> Utils.Location.init_loc 'D' rank
-  | _ -> failwith "Violated Prerequisite"
+  | _ -> failwith "Violated Prerequisite" [@coverage off]
 
 (** [can_be_taken color pieces loc] is whether a piece at [loc] could be taken
     by [color] on a board with [pieces]. *)
@@ -60,7 +60,7 @@ let which_rook_loc finish =
   match Utils.Location.get_col finish with
   | 'G' -> Utils.Location.init_loc 'H' rank
   | 'C' -> Utils.Location.init_loc 'A' rank
-  | _ -> failwith "Violated Prerequisite"
+  | _ -> failwith "Violated Prerequisite" [@coverage off]
 
 (** [rook_still_there color loc pieces records] is whether a rook of color
     [color] is at [loc] in [pieces], and hasn't moved according to [records]. *)
@@ -92,7 +92,7 @@ let must_be_empty_locs finish =
     match Utils.Location.get_col finish with
     | 'G' -> [ 'F'; 'G' ]
     | 'C' -> [ 'B'; 'C'; 'D' ]
-    | _ -> failwith "Violated Prerequisite"
+    | _ -> failwith "Violated Prerequisite" [@coverage off]
   in
   List.map (fun c -> Utils.Location.init_loc c rank) cols
 
@@ -100,28 +100,23 @@ let must_be_empty_locs finish =
 let piece_exists pieces loc =
   List.exists (fun piece -> Piece.Pieces.get_loc piece = loc) pieces
 
-let can_castle color start finish pieces records =
+let can_castle color king finish pieces records =
+  let start = Piece.Pieces.get_loc king in
   if king_has_moved color records then false
   else
-    let king = Check.get_king color pieces in
-    if Piece.Pieces.get_loc king <> start then false
-    else if Bool.not (is_castle color king finish) then false
+    let locs_to_verify = [ start; in_between_loc start finish; finish ] in
+    if
+      List.exists
+        (can_be_taken (Piece.Types.opposite color) pieces)
+        locs_to_verify
+    then false
     else
-      let locs_to_verify = [ start; in_between_loc start finish; finish ] in
-      if
-        List.exists
-          (can_be_taken (Piece.Types.opposite color) pieces)
-          locs_to_verify
-      then false
+      let target_rook_loc = which_rook_loc finish in
+      if Bool.not (rook_still_there color target_rook_loc pieces records) then
+        false
       else
-        let target_rook_loc = which_rook_loc finish in
-        if Bool.not (rook_still_there color target_rook_loc pieces records) then
-          false
-        else
-          let should_be_empty_locs = must_be_empty_locs finish in
-          Bool.not (List.exists (piece_exists pieces) should_be_empty_locs)
-
-exception Cant_castle
+        let should_be_empty_locs = must_be_empty_locs finish in
+        Bool.not (List.exists (piece_exists pieces) should_be_empty_locs)
 
 (** [rook_finish_loc finish] is where a rook should end up after a castle,
     providing that the king castles to [finish]. Requires: [finish] is a valid
@@ -131,33 +126,31 @@ let rook_finish_loc finish =
   match Utils.Location.get_col finish with
   | 'G' -> Utils.Location.init_loc 'F' rank
   | 'C' -> Utils.Location.init_loc 'D' rank
-  | _ -> failwith "Violated Prerequisite"
+  | _ -> failwith "Violated Prerequisite" [@coverage off]
 
-let castle color pieces start finish records =
-  if Bool.not (can_castle color start finish pieces records) then
-    raise Cant_castle
-  else
-    let move_piece start finish piece_list =
-      List.map
-        (fun piece ->
-          if Piece.Pieces.get_loc piece = start then
-            Piece.Pieces.set_loc piece finish
-          else piece)
-        piece_list
-    in
-    let king_piece = Check.get_king color pieces in
-    let rook_start = which_rook_loc finish in
-    let rook_finish = rook_finish_loc finish in
-    let new_pieces =
-      pieces |> move_piece start finish |> move_piece rook_start rook_finish
-    in
-    let is_check = Check.in_check (Piece.Types.opposite color) new_pieces in
-    let is_checkmate =
-      Check.in_checkmate (Piece.Types.opposite color) new_pieces
-    in
-    let color = Piece.Pieces.get_color king_piece in
-    let record =
-      Move_record.gen_record Piece.Types.King color start finish is_check false
-        true None is_checkmate false
-    in
-    (new_pieces, record)
+let castle color pieces piece finish _ =
+  let move_piece start finish piece_list =
+    List.map
+      (fun piece ->
+        if Piece.Pieces.get_loc piece = start then
+          Piece.Pieces.set_loc piece finish
+        else piece)
+      piece_list
+  in
+  let king_piece = piece in
+  let start = Piece.Pieces.get_loc king_piece in
+  let rook_start = which_rook_loc finish in
+  let rook_finish = rook_finish_loc finish in
+  let new_pieces =
+    pieces |> move_piece start finish |> move_piece rook_start rook_finish
+  in
+  let is_check = Check.in_check (Piece.Types.opposite color) new_pieces in
+  let is_checkmate =
+    Check.in_checkmate (Piece.Types.opposite color) new_pieces
+  in
+  let color = Piece.Pieces.get_color king_piece in
+  let record =
+    Move_record.gen_record Piece.Types.King color start finish is_check false
+      true None is_checkmate false
+  in
+  (new_pieces, record)

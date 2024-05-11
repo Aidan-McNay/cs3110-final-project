@@ -14,8 +14,8 @@ let en_passant_board_state white_start black_start =
       Piece.Pieces.init King Black (Utils.Location.init_loc 'E' 8);
     ]
 
-(** [en_passant_history start finish] is a list with a move record where a pawn
-    moved from [start] to [finish]. *)
+(** [en_passant_history start finish color] is a list with a move record where a
+    [color] pawn moved from [start] to [finish]. *)
 let en_passant_history start finish color =
   Piece.Types.
     [
@@ -23,8 +23,8 @@ let en_passant_history start finish color =
         None false false;
     ]
 
-(** [valid_en_passant_move start finish] is a test for a valid en passant move
-    from [start] to [finish] *)
+(** [valid_en_passant_move name color start finish] is a test named [name] for a
+    valid en passant move for the [color] player from [start] to [finish] *)
 let valid_en_passant_move name color start finish =
   let expected_record =
     Piece.Types.(
