@@ -24,5 +24,8 @@ bisect:
 	dune test --instrument-with bisect_ppx --force
 	bisect-ppx-report html
 
-open_bisect: bisect
+open-bisect: bisect
 	open _coverage/index.html
+
+line-check:
+	cloc --by-file --include-lang=OCaml .
