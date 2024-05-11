@@ -258,31 +258,25 @@ module WrongTargetColorTest : Test_utils.BoardTest = struct
     ]
 end
 
-module ValidWhiteEnPassantTester =
-  Test_utils.BoardTester (ValidWhiteEnPassantTest)
+let test_modules : (module Test_utils.BoardTest) list =
+  [
+    (module ValidWhiteEnPassantTest);
+    (module ValidBlackEnPassantTest);
+    (module NotRecentMoveTest);
+    (module BoardEdgeTest);
+    (module NormalCaptureTest);
+    (module NotAPawnTest);
+    (module NoPieceTest);
+    (module WrongTargetColorTest);
+  ]
 
-module ValidBlackEnPassantTester =
-  Test_utils.BoardTester (ValidBlackEnPassantTest)
+let tests =
+  let get_tests m =
+    let module S = (val m : Test_utils.BoardTest) in
+    let module T = Test_utils.BoardTester (S) in
+    T.tests
+  in
+  List.flatten (List.map get_tests test_modules)
 
-module NotRecentMoveTester = Test_utils.BoardTester (NotRecentMoveTest)
-module BoardEdgeTester = Test_utils.BoardTester (BoardEdgeTest)
-module NormalCaptureTester = Test_utils.BoardTester (NormalCaptureTest)
-module NotAPawnTester = Test_utils.BoardTester (NotAPawnTest)
-module NoPieceTester = Test_utils.BoardTester (NoPieceTest)
-module WrongTargetColorTester = Test_utils.BoardTester (WrongTargetColorTest)
-
-let test_suite =
-  "En Passant Test Suite"
-  >::: List.flatten
-         [
-           ValidWhiteEnPassantTester.tests;
-           ValidBlackEnPassantTester.tests;
-           NotRecentMoveTester.tests;
-           BoardEdgeTester.tests;
-           NormalCaptureTester.tests;
-           NotAPawnTester.tests;
-           NoPieceTester.tests;
-           WrongTargetColorTester.tests;
-         ]
-
+let test_suite = "En Passant Test Suite" >::: tests
 let _ = run_test_tt_main test_suite

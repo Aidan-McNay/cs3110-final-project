@@ -15,13 +15,13 @@ val gen_record :
   bool ->
   bool ->
   t
-(** [gen_record piece start finish is_check capture castled promoted checkmate alg_notation]
+(** [gen_record piece start finish is_check capture castled promoted checkmate en_passant]
     is a record of [piece] moving from [start] to [finish], where [is_check] is
     whether it placed the opponent in check, [captured_a_piece] is whether a
     piece was captured, [castled] is whether this piece castled, [promoted] is
     whether this move involved a promotion, [checkmate] is whether it placed the
-    opponent in checkmate and [alg_notation] is the string representation of the
-    move in English Standard Algebraic Notation. *)
+    opponent in checkmate, and [en_passant] is whether it was an en passant
+    move. *)
 
 val get_piece_type : t -> Piece.Types.piece_type
 (** [get_piece record] gets the type of the piece that moved in [record]. *)
