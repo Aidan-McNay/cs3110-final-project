@@ -180,18 +180,16 @@ let promoted_piece piece =
 let promotion_check pieces =
   (List.map promoted_piece pieces, List.exists should_promote pieces)
 
-exception Invalid_promotion
-
-(** [promoted_to pieces promoted finish] is if [promoted] is true returns the
-    piece_type option at location [finish] from the list [pieces] else returns
-    None. If [promoted] is true, there has to be a piece at [finish] otherwise
-    raises error [Invalid_promotion]*)
+(** [promoted_to pieces promoted finish] is the piece that was promoted to at
+    [finish] on [pieces]. If [promoted] is [false], indicating no promotion,
+    then [promoted_to pieces promoted finish] is [None]. Requires: if [promoted]
+    is [true], then there is a piece at [finish] in [pieces]. *)
 let promoted_to pieces promoted finish =
   if promoted then
     Some
       (match Piece.Pieces.(piece_at_loc pieces finish) with
       | Some piece -> Piece.Pieces.get_type piece
-      | None -> raise Invalid_promotion)
+      | None -> failwith "Violated Prerequisites" [@coverage off])
   else None
 
 (** [ambig board piece finish] returns a list of pieces in [board] that are of

@@ -10,5 +10,6 @@ let start_gui () =
   Bogue.Main.run board
 
 let () =
+  Prompt.use_terminal ();
   start_gui ();
   Bogue.Main.quit ()

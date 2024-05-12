@@ -51,87 +51,49 @@ let mk_check_record piece_type color start finish is_capture is_checkmate =
     (Board.Move_record.gen_record piece_type color start finish true is_capture
        false None is_checkmate false)
 
-(** [BlackCheckTest] is a module for black putting white in check *)
-module BlackCheckTest : Test_utils.BoardTest = struct
-  (** [check_start] is the starting location of the checking piece. *)
-  let check_start = Utils.Location.init_loc 'B' 1
-
-  (** [check_finish] is the finishing location of the checking piece. *)
-  let check_finish = Utils.Location.init_loc 'D' 1
-
-  let board_state = check_board
-  let history = []
-
+(** [black_check_test] is a test for black checking white by moving the queen
+    from B1 to D1. *)
+let black_check_test =
+  let check_start = Utils.Location.init_loc 'B' 1 in
+  let check_finish = Utils.Location.init_loc 'D' 1 in
   let check_record =
     mk_check_record Piece.Types.Queen Piece.Types.Black check_start check_finish
       true false
+  in
+  ("black-check", Piece.Types.Black, check_start, check_finish, check_record)
 
-  let moves_to_test =
-    [
-      ("black-check", Piece.Types.Black, check_start, check_finish, check_record);
-    ]
-end
-
-(** [WhiteCheckTest] is a module for white putting black in check *)
-module WhiteCheckTest : Test_utils.BoardTest = struct
-  (** [check_start] is the starting location of the checking piece. *)
-  let check_start = Utils.Location.init_loc 'D' 3
-
-  (** [check_finish] is the finishing location of the checking piece. *)
-  let check_finish = Utils.Location.init_loc 'C' 2
-
-  let board_state = check_board
-  let history = []
-
+(** [white_check_test] is a test for white checking black by moving the bishop
+    from D3 to C2. *)
+let white_check_test =
+  let check_start = Utils.Location.init_loc 'D' 3 in
+  let check_finish = Utils.Location.init_loc 'C' 2 in
   let check_record =
     mk_check_record Piece.Types.Bishop Piece.Types.White check_start
       check_finish false false
+  in
+  ("white-check", Piece.Types.White, check_start, check_finish, check_record)
 
-  let moves_to_test =
-    [
-      ("white-check", Piece.Types.White, check_start, check_finish, check_record);
-    ]
-end
-
-(** [WhiteCheckmateTest] is a module for white putting black in checkmate *)
-module WhiteCheckmateTest : Test_utils.BoardTest = struct
-  (** [check_start] is the starting location of the checking piece. *)
-  let check_start = Utils.Location.init_loc 'A' 1
-
-  (** [check_finish] is the finishing location of the checking piece. *)
-  let check_finish = Utils.Location.init_loc 'A' 3
-
-  let board_state = check_board
-  let history = []
-
+(** [white_checkmate_test] is a test for white checkmating black by moving the
+    rook from A1 to A3. *)
+let white_checkmate_test =
+  let check_start = Utils.Location.init_loc 'A' 1 in
+  let check_finish = Utils.Location.init_loc 'A' 3 in
   let check_record =
     mk_check_record Piece.Types.Rook Piece.Types.White check_start check_finish
       false true
+  in
+  ("white-checkmate", Piece.Types.White, check_start, check_finish, check_record)
+
+(** [CheckTest] is a module for specifying tests for the various checks *)
+module CheckTest : Test_utils.BoardTest = struct
+  let board_state = check_board
+  let history = []
 
   let moves_to_test =
-    [
-      ( "white-checkmate",
-        Piece.Types.White,
-        check_start,
-        check_finish,
-        check_record );
-    ]
+    [ black_check_test; white_check_test; white_checkmate_test ]
 end
 
-let test_modules : (module Test_utils.BoardTest) list =
-  [
-    (module BlackCheckTest);
-    (module WhiteCheckTest);
-    (module WhiteCheckmateTest);
-  ]
+module CheckTester = Test_utils.BoardTester (CheckTest)
 
-let tests =
-  let get_tests m =
-    let module S = (val m : Test_utils.BoardTest) in
-    let module T = Test_utils.BoardTester (S) in
-    T.tests
-  in
-  List.flatten (List.map get_tests test_modules)
-
-let test_suite = "Check Test Suite" >::: tests
+let test_suite = "Check Test Suite" >::: CheckTester.tests
 let _ = run_test_tt_main test_suite
