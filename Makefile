@@ -31,5 +31,5 @@ format: clean
 	dune build @fmt
 	dune promote
 
-line-check:
+line-check: clean
 	cloc --by-file --include-lang=OCaml .
