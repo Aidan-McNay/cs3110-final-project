@@ -93,7 +93,40 @@ module CheckTest : Test_utils.BoardTest = struct
     [ black_check_test; white_check_test; white_checkmate_test ]
 end
 
-module CheckTester = Test_utils.BoardTester (CheckTest)
+(** [SelfInCheckTest] is a module for testing a move that would put the mover in
+    check. *)
+module SelfInCheckTest : Test_utils.BoardTest = struct
+  let board_state =
+    Piece.Pieces.
+      [
+        init King White (Utils.Location.init_loc 'E' 1);
+        init King Black (Utils.Location.init_loc 'E' 8);
+        init Queen Black (Utils.Location.init_loc 'A' 5);
+        init Pawn White (Utils.Location.init_loc 'D' 2);
+      ]
 
-let test_suite = "Check Test Suite" >::: CheckTester.tests
+  let history = []
+
+  let moves_to_test =
+    [
+      ( "self-in-check",
+        Piece.Types.White,
+        Utils.Location.init_loc 'D' 2,
+        Utils.Location.init_loc 'D' 3,
+        Test_utils.Puts_in_check );
+    ]
+end
+
+let test_modules : (module Test_utils.BoardTest) list =
+  [ (module CheckTest); (module SelfInCheckTest) ]
+
+let tests =
+  let get_tests m =
+    let module S = (val m : Test_utils.BoardTest) in
+    let module T = Test_utils.BoardTester (S) in
+    T.tests
+  in
+  List.flatten (List.map get_tests test_modules)
+
+let test_suite = "Check Test Suite" >::: tests
 let _ = run_test_tt_main test_suite

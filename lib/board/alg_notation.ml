@@ -81,10 +81,10 @@ let move_record_to_longalgnotation move_rec =
 let rec move_history_to_algformat moves acc =
   match moves with
   | [] -> ""
-  | [ hd ] -> string_of_int acc ^ ". " ^ hd
-  | [ fst; snd ] -> string_of_int acc ^ ". " ^ fst ^ "  " ^ snd
+  | [ hd ] -> string_of_int acc ^ "," ^ hd ^ ","
+  | [ fst; snd ] -> string_of_int acc ^ "," ^ fst ^ "," ^ snd
   | h :: t :: r ->
-      string_of_int acc ^ ". " ^ h ^ "  " ^ t ^ "\n"
+      string_of_int acc ^ "," ^ h ^ "," ^ t ^ "\n"
       ^ move_history_to_algformat r (acc + 1)
 
 let print_move_history out_channel moves =

@@ -145,12 +145,43 @@ let prompt_layout color =
   Turn.set_callback None update_prompt;
   Bogue.Layout.tower_of_w ~sep:0 ~align:Bogue.Draw.Center ~w:200 [ widget ]
 
+(** [history_button ()] is the button the user uses to dump the game history to
+    "game.txt". *)
+let input_button () =
+  let input_button_label =
+    Bogue.Label.create ~size:14 "Output History to game.csv"
+  in
+  let input_button_bg = Bogue.Style.Solid light_cornell in
+  let button =
+    Bogue.Widget.button ~fg:cornell ~border_radius:10 ~border_color:cornell
+      ~label:input_button_label ~bg_off:input_button_bg ~bg_on:input_button_bg
+      ~bg_over:(Some input_button_bg) "N/A"
+  in
+  let display_dumped () =
+    Bogue.Widget.set_text button "Outputted!";
+    Bogue.Widget.update button
+  in
+  let display_prompt () =
+    Bogue.Widget.set_text button "Output History to game.csv";
+    Bogue.Widget.update button
+  in
+  let dump_history _ =
+    Board.Alg_notation.move_history_file "game.csv"
+      (Board.Chessboard.get_rev_alg_notation !curr_board);
+    display_dumped ();
+    ignore (Bogue.Timeout.add 1000 display_prompt)
+  in
+  Bogue.Widget.on_button_release ~release:dump_history button;
+  Bogue.Layout.tower_of_w ~sep:0 ~align:Bogue.Draw.Center ~w:200 [ button ]
+
 let game_layout color =
   let tracker = Move_tracker.init curr_board color in
   let chessboard_layout = board_layout tracker color in
   let layout =
     Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center
-      [ title_layout (); chessboard_layout; prompt_layout color ]
+      [
+        title_layout (); chessboard_layout; prompt_layout color; input_button ();
+      ]
   in
   Bogue.Layout.disable_resize layout;
   Move_tracker.register_popup_layout tracker layout;
