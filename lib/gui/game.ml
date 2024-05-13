@@ -149,7 +149,7 @@ let prompt_layout color =
     "game.txt". *)
 let input_button () =
   let input_button_label =
-    Bogue.Label.create ~size:14 "Output History to game.csv"
+    Bogue.Label.create ~size:14 "Output History to game.pgn"
   in
   let input_button_bg = Bogue.Style.Solid light_cornell in
   let button =
@@ -162,11 +162,11 @@ let input_button () =
     Bogue.Widget.update button
   in
   let display_prompt () =
-    Bogue.Widget.set_text button "Output History to game.csv";
+    Bogue.Widget.set_text button "Output History to game.pgn";
     Bogue.Widget.update button
   in
   let dump_history _ =
-    Board.Alg_notation.move_history_file "game.csv"
+    Board.Alg_notation.move_history_file "game.pgn"
       (Board.Chessboard.get_rev_alg_notation !curr_board);
     display_dumped ();
     ignore (Bogue.Timeout.add 1000 display_prompt)

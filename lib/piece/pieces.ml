@@ -135,23 +135,3 @@ let to_image piece bg =
   let filename = "icons/" ^ name ^ "_" ^ color ^ ".png" in
   ignore bg;
   Bogue.Widget.image ~w:50 ~h:50 ~bg filename
-
-let to_algebraic_notation piece_type =
-  match piece_type with
-  | Types.Pawn -> ""
-  | Types.Knight -> "N"
-  | Types.Bishop -> "B"
-  | Types.Rook -> "R"
-  | Types.Queen -> "Q"
-  | Types.King -> "K"
-
-exception InvalidSymbol
-
-let alg_notation_to_piece_type symbol =
-  match symbol with
-  | ' ' -> Types.Pawn
-  | 'N' -> Types.Knight
-  | 'B' -> Types.Bishop
-  | 'Q' -> Types.Queen
-  | 'K' -> Types.King
-  | _ -> raise InvalidSymbol

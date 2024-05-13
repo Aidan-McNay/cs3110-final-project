@@ -2,6 +2,7 @@
 # .gitignore for CheckCamelMate
 #=========================================================================
 
+.DS_Store
 _build/
 _coverage/
 bogue/

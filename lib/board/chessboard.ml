@@ -238,14 +238,19 @@ let move_piece board color start finish =
               captured_a_piece false promoted_type checkmate_opp false
           in
           let new_alg_not =
-            Alg_notation.move_record_to_alg_notation ambig new_move_record
+            let alg_not =
+              Alg_notation.move_record_to_alg_notation ambig new_move_record
+            in
+            if checkmate_opp then
+              [ Alg_notation.checkmate_entry color; alg_not ]
+            else [ alg_not ]
           in
           {
             pieces_on_board;
             captured_by_white = new_board.captured_by_white;
             captured_by_black = new_board.captured_by_black;
             moves = new_move_record :: new_board.moves;
-            alg_notation = new_alg_not :: new_board.alg_notation;
+            alg_notation = new_alg_not @ new_board.alg_notation;
           }
 
 let in_checkmate color board = Check.in_checkmate color board.pieces_on_board

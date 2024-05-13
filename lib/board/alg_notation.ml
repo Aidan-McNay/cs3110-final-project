@@ -1,15 +1,31 @@
 (* @author Andro Janashia (aj454), Aidan McNay (acm289) *)
 
-(** [castling_to_notation finish] checks whether kingside castling happened or
-    queenside and returns the English Standard Algebraic Notation associated
-    with what happened.*)
-let castling_to_notation finish =
+let checkmate_entry = function
+  | Piece.Types.White -> "1-0"
+  | Piece.Types.Black -> "0-1"
+
+(** [name_of_piece_type piece_type] is the string representing [piece_type] in
+    algebraic notation. *)
+let name_of_piece_type piece_type =
+  match piece_type with
+  | Piece.Types.Pawn -> ""
+  | Piece.Types.Knight -> "N"
+  | Piece.Types.Bishop -> "B"
+  | Piece.Types.Rook -> "R"
+  | Piece.Types.Queen -> "Q"
+  | Piece.Types.King -> "K"
+
+(** [castle_str record] is the algebraic notation for the castle represented by
+    [record]. Requires: [record] represents a castle move. *)
+let castle_str record =
+  let finish = Move_record.get_finish record in
   let kingside = Utils.Location.get_col finish = 'G' in
   if kingside then "0-0" else "0-0-0"
 
-(** [get_ambig_str ambig_pieces start] is the string needed to disambiguate
-    [start] from the other possible locations in [ambig_pieces]. *)
-let get_ambig_str ambig_pieces start =
+(** [ambig_str ambig_pieces record] is the string needed to disambiguate the
+    move in [record] from the other possible locations in [ambig_pieces]. *)
+let ambig_str ambig_pieces record =
+  let start = Move_record.get_start record in
   let file_str = String.make 1 (Utils.Location.get_col_lowercase start) in
   let rank_str = string_of_int (Utils.Location.get_row start) in
   let file_rank_str = file_str ^ rank_str in
@@ -29,68 +45,70 @@ let get_ambig_str ambig_pieces start =
       let removed_shared_rank = List.filter different_rank ambig_pieces in
       if List.is_empty removed_shared_rank then rank_str else file_rank_str
 
-let move_record_to_alg_notation ambig record =
-  let piece = Move_record.get_piece_type record in
-  let start = Move_record.get_start record in
-  let finish = Move_record.get_finish record in
-  let check = Move_record.was_check record in
-  let capture = Move_record.was_capture record in
-  let castled = Move_record.was_castle record in
-  let promotion = Move_record.was_promotion record in
-  let checkmate = Move_record.get_checkmate record in
-  let en_passant = Move_record.get_en_passant record in
-
-  if castled then castling_to_notation finish
+(** [move_str ambig_pieces record] is the base move string for [record] (without
+    indicating other attributes like promotion, check, or en passant), knowing
+    that pieces in [ambig_pieces] could've also moved to the same location. *)
+let move_str ambig_pieces record =
+  if Move_record.was_castle record then castle_str record
   else
-    let promotion =
-      match promotion with
-      | Some prom -> Piece.Pieces.to_algebraic_notation prom
-      | None -> ""
+    let piece_type = Move_record.get_piece_type record in
+    let start = Move_record.get_start record in
+    let finish = Move_record.get_finish record in
+    let capture = Move_record.was_capture record in
+    let start_str = name_of_piece_type piece_type in
+    let disambiguate_str = ambig_str ambig_pieces record in
+    let pawn_capture_file =
+      if
+        capture && piece_type = Piece.Types.Pawn && List.length ambig_pieces < 1
+      then String.make 1 (Utils.Location.get_col_lowercase start)
+      else ""
     in
-    Piece.Pieces.to_algebraic_notation piece
-    ^ get_ambig_str ambig start
-    ^ (if capture && List.length ambig < 1 && piece = Piece.Types.Pawn then
-         String.(lowercase_ascii (make 1 (Utils.Location.get_col start))) ^ "x"
-       else "")
-    ^ (if capture && piece <> Piece.Types.Pawn then "x" else "")
-    ^ ""
-    ^ String.lowercase_ascii (Utils.Location.str_of_loc finish)
-    ^ promotion
-    ^ (if checkmate then "#" else if check then "+" else "")
-    ^ if en_passant then " e.p." else ""
+    let capture_str = if capture then "x" else "" in
+    let finish_str = Utils.Location.str_of_loc_lowercase finish in
+    start_str ^ disambiguate_str ^ pawn_capture_file ^ capture_str ^ finish_str
 
-let move_record_to_longalgnotation move_rec =
-  let piece_type = Move_record.get_piece_type move_rec in
-  let finish = Move_record.get_finish move_rec in
-  let start = Move_record.get_start move_rec in
-  let capture = Move_record.was_capture move_rec in
-  let check = Move_record.was_check move_rec in
-  let castle = Move_record.was_castle move_rec in
-  let promotion =
-    match Move_record.was_promotion move_rec with
-    | Some prom -> Piece.Pieces.to_algebraic_notation prom
-    | None -> ""
+(** [promote_str record] is the string needed to represent the promotion in
+    [record], if any. *)
+let promote_str record =
+  match Move_record.was_promotion record with
+  | None -> ""
+  | Some piece_type -> name_of_piece_type piece_type
+
+(** [check_str record] is the string needed to represent the check or checkmate
+    in [record], if any. *)
+let check_str record =
+  let check = Move_record.was_check record in
+  let checkmate = Move_record.get_checkmate record in
+  if checkmate then "#" else if check then "+" else ""
+
+(** [en_passant_suffix record] is the suffix used to indicate en passant in
+    [record], if needed. *)
+let en_passant_suffix record =
+  if Move_record.get_en_passant record then " e.p." else ""
+
+let move_record_to_alg_notation ambig record =
+  let str_funcs =
+    [ move_str ambig; promote_str; check_str; en_passant_suffix ]
   in
-  if castle then castling_to_notation finish
-  else
-    Piece.Pieces.to_algebraic_notation piece_type
-    ^ String.lowercase_ascii (Utils.Location.str_of_loc start)
-    ^ (if capture then "x" else "-")
-    ^ String.lowercase_ascii (Utils.Location.str_of_loc finish)
-    ^ promotion
-    ^ if check then "+" else ""
+  String.concat "" (List.map (fun f -> f record) str_funcs)
+
+(** [is_end_of_game entry] checks whether [entry] indicates the end of a game. *)
+let is_end_of_game = function
+  | "1-0" -> true
+  | "0-1" -> true
+  | _ -> false
 
 let rec move_history_to_algformat moves acc =
   match moves with
   | [] -> ""
-  | [ hd ] -> string_of_int acc ^ "," ^ hd ^ ","
-  | [ fst; snd ] -> string_of_int acc ^ "," ^ fst ^ "," ^ snd
+  | [ hd ] ->
+      if is_end_of_game hd then hd else string_of_int acc ^ ". " ^ hd ^ " "
+  | [ fst; snd ] -> string_of_int acc ^ ". " ^ fst ^ " " ^ snd
   | h :: t :: r ->
-      string_of_int acc ^ "," ^ h ^ "," ^ t ^ "\n"
+      string_of_int acc ^ ". " ^ h ^ " " ^ t ^ " "
       ^ move_history_to_algformat r (acc + 1)
 
 let print_move_history out_channel moves =
-  Printf.fprintf out_channel "%s\n" "Turn,White,Black";
   Printf.fprintf out_channel "%s\n" (move_history_to_algformat moves 1)
 
 let move_history_file filename moves =
