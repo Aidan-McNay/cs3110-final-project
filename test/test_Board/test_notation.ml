@@ -2,21 +2,6 @@
 
 open OUnit2
 
-(** [test_record ?is_check ?capture ?castle ?promoted ?checkmate ?en_passant piece_type color (col1, row1) (col2, row2)]
-    is the record for moving a piece of type [piece_type] and color [color] from
-    the location represented by [(col1, row1)] to the location represented by
-    [(col2, row2)]. The optional arguments [is_check], [capture], [castle],
-    [promoted], [checkmate], and [en_passant] represent their counterparts in
-    [Move_record.gen_record], but default to their "normal" values for
-    concision. *)
-let test_record ?(is_check = false) ?(capture = false) ?(castle = false)
-    ?promoted ?(checkmate = false) ?(en_passant = false) piece_type color
-    (col1, row1) (col2, row2) =
-  let start = Utils.Location.init_loc col1 row1 in
-  let finish = Utils.Location.init_loc col2 row2 in
-  Board.Move_record.gen_record piece_type color start finish is_check capture
-    castle promoted checkmate en_passant
-
 (** [test_from_input name record ?ambig expected_notation] is a test named
     [name] checking that the notation for [record] is the same as
     [expected_notation]. [ambig] are the other pieces that could take the ending
@@ -30,7 +15,7 @@ let tests =
   Piece.Types.
     [
       test_from_input "pawn-move"
-        (test_record Pawn White ('E', 2) ('E', 4))
+        (Test_utils.test_record Pawn White ('E', 2) ('E', 4))
         "e4";
     ]
 (* let move_record_test_list = Piece.Types. [ create_move_record (Pawn, White)

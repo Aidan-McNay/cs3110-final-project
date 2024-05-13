@@ -34,16 +34,6 @@ let mk_board pieces records alg_nots =
     alg_notation = alg_nots;
   }
 
-(** [get_piece_points pieces] is the cumulative number of points that the pieces
-    in [pieces] are worth. *)
-let get_piece_points pieces =
-  List.fold_left (fun acc piece -> acc + Piece.Pieces.get_points piece) 0 pieces
-
-let get_points board color =
-  match color with
-  | Piece.Types.White -> get_piece_points board.captured_by_white
-  | Piece.Types.Black -> get_piece_points board.captured_by_black
-
 exception Invalid_move
 exception Puts_in_check
 
@@ -263,38 +253,6 @@ let last_move board =
   | h :: _ -> h
 
 let move_history board = board.moves
-
-(** [loc_rep board loc] is the string representation of the location [loc] on
-    [board]. *)
-let loc_rep board loc =
-  match
-    List.find_opt
-      (fun piece -> Piece.Pieces.get_loc piece = loc)
-      board.pieces_on_board
-  with
-  | Some piece -> Piece.Pieces.to_string piece
-  | None -> " "
-
-(** [columns] is the list of columns on a chess board, in order of printing. *)
-let columns = [ 'A'; 'B'; 'C'; 'D'; 'E'; 'F'; 'G'; 'H' ]
-
-(** [row_rep board row] is the string representation of row [row] in [board]. *)
-let row_rep board row =
-  let get_loc_rep = loc_rep board in
-  let loc_reps =
-    List.map (fun col -> get_loc_rep (Utils.Location.init_loc col row)) columns
-  in
-  string_of_int row ^ " | " ^ String.concat " | " loc_reps ^ " |"
-
-(** [rows] is the list of rows on a chess board, in order of printing. *)
-let rows = [ 8; 7; 6; 5; 4; 3; 2; 1 ]
-
-let string_rep board =
-  let get_row_rep = row_rep board in
-  let row_reps = List.map get_row_rep rows in
-  "  ,-------------------------------.\n"
-  ^ String.concat "\n  |---+---+---+---+---+---+---+---|\n" row_reps
-  ^ "\n  `-------------------------------'\n    A   B   C   D   E   F   G   H "
 
 let image_at_loc ?(selected = false) board loc bg =
   let bg =

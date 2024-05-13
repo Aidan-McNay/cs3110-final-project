@@ -6,5 +6,6 @@
   test_castle
   test_capture
   test_check
-  test_promotion)
+  test_promotion
+  test_realistic)
  (libraries ounit2 Board Piece Utils))
