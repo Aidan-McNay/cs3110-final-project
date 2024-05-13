@@ -174,11 +174,16 @@ let input_button () =
   Bogue.Widget.on_button_release ~release:dump_history button;
   Bogue.Layout.tower_of_w ~sep:0 ~align:Bogue.Draw.Center ~w:200 [ button ]
 
+(** [window_name color] is the name of the window for the [color] player. *)
+let window_name = function
+  | Piece.Types.White -> "White's Board"
+  | Piece.Types.Black -> "Black's Board"
+
 let game_layout color =
   let tracker = Move_tracker.init curr_board color in
   let chessboard_layout = board_layout tracker color in
   let layout =
-    Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center
+    Bogue.Layout.tower ~sep:0 ~align:Bogue.Draw.Center ~name:(window_name color)
       [
         title_layout (); chessboard_layout; prompt_layout color; input_button ();
       ]
