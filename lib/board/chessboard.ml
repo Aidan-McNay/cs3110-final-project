@@ -192,10 +192,10 @@ let promoted_to pieces promoted finish =
       | None -> failwith "Violated Prerequisites" [@coverage off])
   else None
 
-(** [ambig board piece finish] returns a list of pieces in [board] that are of
-    the same piece type as [piece] and that could have also been moved to
+(** [ambig_pieces board piece finish] returns a list of pieces in [board] that
+    are of the same piece type as [piece] and that could have also been moved to
     [finish]. *)
-let ambig board piece finish =
+let ambig_pieces board piece finish =
   List.filter
     (fun pc ->
       Piece.Pieces.get_type pc = Piece.Pieces.get_type piece
@@ -230,7 +230,7 @@ let move_piece board color start finish =
             Check.in_checkmate (Piece.Types.opposite color) pieces_on_board
           in
           let promoted_type = promoted_to pieces_on_board promoted finish in
-          let ambig = ambig board piece finish in
+          let ambig = ambig_pieces board piece finish in
           let piece_type = Piece.Pieces.get_type piece in
           let color = Piece.Pieces.get_color piece in
           let new_move_record =
