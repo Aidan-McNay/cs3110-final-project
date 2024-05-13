@@ -193,11 +193,13 @@ let promoted_to pieces promoted finish =
   else None
 
 (** [ambig board piece finish] returns a list of pieces in [board] that are of
-    the same piece type as [piece] and that could have move to [finish]. *)
+    the same piece type as [piece] and that could have also been moved to
+    [finish]. *)
 let ambig board piece finish =
   List.filter
     (fun pc ->
       Piece.Pieces.get_type pc = Piece.Pieces.get_type piece
+      && Piece.Pieces.get_color pc = Piece.Pieces.get_color piece
       && is_valid_move board pc finish
       && Piece.Pieces.get_loc piece <> Piece.Pieces.get_loc pc)
     board.pieces_on_board

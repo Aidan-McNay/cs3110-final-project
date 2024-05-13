@@ -1,4 +1,4 @@
-(* @author Andro Janashia (aj454)*)
+(* @author Andro Janashia (aj454) *)
 
 open OUnit2
 
@@ -79,15 +79,15 @@ let tests =
                 move_record_test_list) );
          ( "move record list to string test" >:: fun _ ->
            assert_equal
-             "1. 0-0-0  0-0\n\
-              2. 0-0-0  0-0\n\
-              3. cxb1R+  axb1B\n\
-              4. g8N+  f8Q\n\
-              5. hxg3+  Qg3+\n\
-              6. Rxa7  Na3\n\
-              7. Qc3  Bg5\n\
-              8. e3  bxa3 e.p.\n\
-              9. dxe6# e.p."
+             "1,0-0-0,0-0\n\
+              2,0-0-0,0-0\n\
+              3,cxb1R+,axb1B\n\
+              4,g8N+,f8Q\n\
+              5,hxg3+,Qg3+\n\
+              6,Rxa7,Na3\n\
+              7,Qc3,Bg5\n\
+              8,e3,bxa3 e.p.\n\
+              9,dxe6# e.p.,"
              Board.Alg_notation.(
                move_history_to_algformat
                  (List.rev
@@ -99,7 +99,7 @@ let tests =
            assert_equal "" (Board.Alg_notation.move_history_to_algformat [] 1)
          );
          ( "one move record to string test" >:: fun _ ->
-           assert_equal "1. dxe6# e.p."
+           assert_equal "1,dxe6# e.p.,"
              Board.Alg_notation.(
                move_history_to_algformat
                  [
@@ -108,7 +108,7 @@ let tests =
                  ]
                  1) );
          ( "two move records to string test" >:: fun _ ->
-           assert_equal "1. dxe6# e.p.  dxe6# e.p."
+           assert_equal "1,dxe6# e.p.,dxe6# e.p."
              Board.Alg_notation.(
                move_history_to_algformat
                  [

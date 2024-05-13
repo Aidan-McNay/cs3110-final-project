@@ -31,6 +31,7 @@ let init_loc c r =
   on_board loc
 
 let get_col loc = char_of_int loc.column
+let get_col_lowercase loc = char_of_int (loc.column + 32)
 let get_row loc = loc.row
 
 let apply_move { column = c; row = r } move =
@@ -42,6 +43,9 @@ let apply_move { column = c; row = r } move =
 
 let apply_moves loc moves = List.fold_left apply_move loc moves
 let str_of_loc loc = String.make 1 (get_col loc) ^ string_of_int (get_row loc)
+
+let str_of_loc_lowercase loc =
+  String.make 1 (get_col_lowercase loc) ^ string_of_int (get_row loc)
 
 let color_of_loc loc =
   let coord_sum = loc.column + loc.row in

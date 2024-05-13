@@ -15,6 +15,9 @@ val init_loc : char -> int -> t
 val get_col : t -> char
 (** [get_col loc] is the column value of [loc]. *)
 
+val get_col_lowercase : t -> char
+(** [get_col_lowercase loc] is the lowercase column value of [loc]. *)
+
 val get_row : t -> int
 (** [get_rw loc] is the row value of [loc]. *)
 
@@ -30,6 +33,9 @@ val apply_moves : t -> Move.moves -> t
 
 val str_of_loc : t -> string
 (** [str_of_loc loc] is the string representation of [loc]. *)
+
+val str_of_loc_lowercase : t -> string
+(** [str_of_loc_lowercase loc] is the lowercase string representation of [loc]. *)
 
 val color_of_loc : t -> Bogue.Draw.color
 (** [color_of_loc loc] is the color of the square at [loc]. *)
