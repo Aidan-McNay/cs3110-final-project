@@ -39,11 +39,11 @@ let ambig_str ambig_pieces record =
   in
   if List.is_empty ambig_pieces then ""
   else
-    let removed_shared_file = List.filter same_file ambig_pieces in
-    if List.is_empty removed_shared_file then file_str
+    let removed_different_file = List.filter same_file ambig_pieces in
+    if List.is_empty removed_different_file then file_str
     else
-      let removed_shared_rank = List.filter same_rank ambig_pieces in
-      if List.is_empty removed_shared_rank then rank_str else file_rank_str
+      let removed_different_rank = List.filter same_rank ambig_pieces in
+      if List.is_empty removed_different_rank then rank_str else file_rank_str
 
 (** [move_str ambig_pieces record] is the base move string for [record] (without
     indicating other attributes like promotion, check, or en passant), knowing
