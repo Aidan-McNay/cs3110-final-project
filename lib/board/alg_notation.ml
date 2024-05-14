@@ -29,20 +29,20 @@ let ambig_str ambig_pieces record =
   let file_str = String.make 1 (Utils.Location.get_col_lowercase start) in
   let rank_str = string_of_int (Utils.Location.get_row start) in
   let file_rank_str = file_str ^ rank_str in
-  let different_file piece =
+  let same_file piece =
     Utils.Location.get_col (Piece.Pieces.get_loc piece)
-    <> Utils.Location.get_col start
+    = Utils.Location.get_col start
   in
-  let different_rank piece =
+  let same_rank piece =
     Utils.Location.get_row (Piece.Pieces.get_loc piece)
-    <> Utils.Location.get_row start
+    = Utils.Location.get_row start
   in
   if List.is_empty ambig_pieces then ""
   else
-    let removed_shared_file = List.filter different_file ambig_pieces in
+    let removed_shared_file = List.filter same_file ambig_pieces in
     if List.is_empty removed_shared_file then file_str
     else
-      let removed_shared_rank = List.filter different_rank ambig_pieces in
+      let removed_shared_rank = List.filter same_rank ambig_pieces in
       if List.is_empty removed_shared_rank then rank_str else file_rank_str
 
 (** [move_str ambig_pieces record] is the base move string for [record] (without
@@ -72,7 +72,7 @@ let move_str ambig_pieces record =
 let promote_str record =
   match Move_record.was_promotion record with
   | None -> ""
-  | Some piece_type -> name_of_piece_type piece_type
+  | Some piece_type -> "=" ^ name_of_piece_type piece_type
 
 (** [check_str record] is the string needed to represent the check or checkmate
     in [record], if any. *)
