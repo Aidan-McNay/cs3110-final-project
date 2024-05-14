@@ -20,7 +20,7 @@ let name_of_piece_type piece_type =
 let castle_str record =
   let finish = Move_record.get_finish record in
   let kingside = Utils.Location.get_col finish = 'G' in
-  if kingside then "0-0" else "0-0-0"
+  if kingside then "O-O" else "O-O-O"
 
 (** [ambig_str ambig_pieces record] is the string needed to disambiguate the
     move in [record] from the other possible locations in [ambig_pieces]. *)

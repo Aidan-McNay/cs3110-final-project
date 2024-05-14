@@ -10,6 +10,10 @@ let test_from_input name record ?(ambig = []) expected_notation =
   let notation = Board.Alg_notation.move_record_to_alg_notation ambig record in
   name >:: fun _ -> assert_equal expected_notation notation ~printer:Fun.id
 
+let test_to_string name alg_list expected_string =
+  let notation = Board.Alg_notation.move_history_to_algformat alg_list 1 in
+  name >:: fun _ -> assert_equal expected_string notation ~printer:Fun.id
+
 (** [tests] are the tests to run. *)
 let tests =
   Piece.Types.
@@ -65,6 +69,16 @@ let tests =
             Piece.Pieces.init Queen White (Utils.Location.init_loc 'H' 1);
           ]
         "Qh4e1";
+      test_to_string "real-game-history" Test_utils.sample_game_history
+        "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. d3 O-O 6. O-O d5 7. exd5 \
+         Nxd5 8. a4 a6 9. Re1 Bg4 10. Nbd2 Kh8 11. h3 Bh5 12. Ne4 Ba7 13. Ng3 \
+         Bg6 14. Nxe5 Nxe5 15. Rxe5 Nb6 16. Qf3 c6 17. Bf4 Bb8 18. Ree1 Nxc4 \
+         19. dxc4 Qh4 20. Ne2 Ba7 21. Bd6 Rfe8 22. Nf4 Bc2 23. c5 a5 24. Re2 \
+         Bb3 25. Ra3 1-0";
+      test_to_string "empty-history" [] "";
+      test_to_string "one-move-history" [ "e3" ] "1. e3 ";
+      test_to_string "white-win" [ "e3"; "f4"; "1-0" ] "1. e3 f4 1-0";
+      test_to_string "black-win" [ "e3"; "f4"; "0-1" ] "1. e3 f4 0-1";
     ]
 
 (* let move_record_test_list = Piece.Types. [ create_move_record (Pawn, White)
