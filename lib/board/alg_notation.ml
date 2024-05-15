@@ -108,6 +108,9 @@ let rec move_history_to_algformat moves acc =
       string_of_int acc ^ ". " ^ h ^ " " ^ t ^ " "
       ^ move_history_to_algformat r (acc + 1)
 
+(**[print_move_history out_channel moves] prints out the [moves] made by the
+   players during the game to [out_channel], with "Turns, White, Black" as the
+   header and the moves in English Standard Algebraic Notation*)
 let print_move_history out_channel moves =
   Printf.fprintf out_channel "%s\n" (move_history_to_algformat moves 1)
 

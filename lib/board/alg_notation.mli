@@ -10,11 +10,6 @@ val move_history_to_algformat : string list -> int -> string
    element being the turn number counting from [acc], second element white's
    turn and third - black's. *)
 
-val print_move_history : out_channel -> string list -> unit
-(**[print_move_history out_channel moves] prints out the [moves] made by the
-   players during the game to [out_channel], with "Turns, White, Black" as the
-   header and the moves in English Standard Algebraic Notation*)
-
 val move_history_file : string -> string list -> unit
 (** [move_history_file filename moves] outputs the PGN format of the notation in
     [moves] to [filename].*)
