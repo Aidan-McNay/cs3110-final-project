@@ -5,8 +5,6 @@ open OUnit2
 module BasicPawnParams = struct
   let piece_type = Piece.Types.Pawn
   let points = 1
-  let white_str_rep = "\u{2659}"
-  let black_str_rep = "\u{265F}"
 end
 
 module BasicPawnTestInputs : Test_utils.PieceTestInputs = struct
@@ -14,7 +12,6 @@ module BasicPawnTestInputs : Test_utils.PieceTestInputs = struct
 
   let color = Piece.Types.White
   let location = Utils.Location.init_loc 'B' 4
-  let str_rep = white_str_rep
   let board = Test_utils.empty_board
   let possible_moves = Utils.Move.[ [ Up ] ]
 end
@@ -24,7 +21,6 @@ module DoubleMoveWhitePawnTestInputs : Test_utils.PieceTestInputs = struct
 
   let color = Piece.Types.White
   let location = Utils.Location.init_loc 'C' 2
-  let str_rep = white_str_rep
   let board = Test_utils.empty_board
   let possible_moves = Utils.Move.[ [ Up ]; [ Up; Up ] ]
 end
@@ -34,7 +30,6 @@ module DoubleMoveBlackPawnTestInputs : Test_utils.PieceTestInputs = struct
 
   let color = Piece.Types.Black
   let location = Utils.Location.init_loc 'H' 7
-  let str_rep = black_str_rep
   let board = Test_utils.empty_board
   let possible_moves = Utils.Move.[ [ Down ]; [ Down; Down ] ]
 end
@@ -44,7 +39,6 @@ module EndOfBoardPawnTestInputs : Test_utils.PieceTestInputs = struct
 
   let color = Piece.Types.White
   let location = Utils.Location.init_loc 'F' 8
-  let str_rep = white_str_rep
   let board = Test_utils.empty_board
   let possible_moves = []
 end
@@ -54,7 +48,6 @@ module CapturePawnTestInputs : Test_utils.PieceTestInputs = struct
 
   let color = Piece.Types.Black
   let location = Utils.Location.init_loc 'C' 3
-  let str_rep = black_str_rep
   let board = Test_utils.board1
   let possible_moves = Utils.Move.[ [ Down ]; [ Down; Right ] ]
 end
@@ -64,7 +57,6 @@ module ObstructFrontMovePawnTestInputs : Test_utils.PieceTestInputs = struct
 
   let color = Piece.Types.White
   let location = Utils.Location.init_loc 'E' 2
-  let str_rep = white_str_rep
 
   let board =
     Piece.Pieces.(init Pawn White (Utils.Location.init_loc 'E' 3))
@@ -78,7 +70,6 @@ module ObstructDoubleMovePawnTestInputs : Test_utils.PieceTestInputs = struct
 
   let color = Piece.Types.Black
   let location = Utils.Location.init_loc 'D' 7
-  let str_rep = black_str_rep
   let board = Test_utils.board1
   let possible_moves = Utils.Move.[ [ Down ] ]
 end

@@ -27,7 +27,7 @@ type piece_presence = {
   color : color;
   location : Utils.Location.t;
 }
-(** A type representing the presence of a piece at a location. *)
+(** A type representing the presence of a piece at a location on a chess board. *)
 
 val color_present : piece_presence list -> Utils.Location.t -> color option
 (** [color_present presence_list location] is the color of the piece in
@@ -49,7 +49,7 @@ type valid_moves =
   Utils.Location.t -> color -> piece_presence list -> Utils.Move.moves list
 (** The type of a function that gets a piece's valid moves.
     [valid_moves loc presence_list] is all of the valid moves that a piece at
-    [loc] can take, given pieces at [presence_list]. *)
+    [loc] can take, given pieces at locations in [presence_list]. *)
 
 type piece_metadata = {
   points : int;

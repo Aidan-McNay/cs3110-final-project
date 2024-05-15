@@ -5,8 +5,6 @@ open OUnit2
 module BasicKingParams = struct
   let piece_type = Piece.Types.King
   let points = 200
-  let white_str_rep = "\u{2654}"
-  let black_str_rep = "\u{265A}"
 end
 
 module BasicKingTestInputs : Test_utils.PieceTestInputs = struct
@@ -14,7 +12,6 @@ module BasicKingTestInputs : Test_utils.PieceTestInputs = struct
 
   let color = Piece.Types.White
   let location = Utils.Location.init_loc 'D' 5
-  let str_rep = white_str_rep
   let board = Test_utils.empty_board
 
   let possible_moves =
@@ -36,7 +33,6 @@ module EdgeOfBoardKingTestInputs : Test_utils.PieceTestInputs = struct
 
   let color = Piece.Types.Black
   let location = Utils.Location.init_loc 'A' 8
-  let str_rep = black_str_rep
   let board = Test_utils.empty_board
   let possible_moves = Utils.Move.[ [ Down ]; [ Right ]; [ Down; Right ] ]
 end
@@ -46,7 +42,6 @@ module CaptureKingTestInputs : Test_utils.PieceTestInputs = struct
 
   let color = Piece.Types.Black
   let location = Utils.Location.init_loc 'G' 5
-  let str_rep = black_str_rep
   let board = Test_utils.board1
 
   let possible_moves =

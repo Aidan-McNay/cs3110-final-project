@@ -45,9 +45,6 @@ module type PieceTestInputs = sig
   val color : Piece.Types.color
   (** [color] is the color of the piece we're testing. *)
 
-  val str_rep : string
-  (** [str_rep] is the string representation of the piece we're testing *)
-
   val board : Piece.Pieces.t list
   (** [board] is the other pieces on the board, besides the piece we're testing. *)
 
@@ -126,7 +123,6 @@ module PieceTester (Inputs : PieceTestInputs) = struct
     assert_equal Inputs.points
       (Piece.Pieces.get_points piece)
       ~printer:string_of_int;
-    assert_equal Inputs.str_rep (Piece.Pieces.to_string piece) ~printer:Fun.id;
     let loc1 = Utils.Location.init_loc 'B' 8 in
     let loc2 = Utils.Location.init_loc 'G' 3 in
     assert_equal loc1

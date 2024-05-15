@@ -9,6 +9,15 @@ type t = {
   location : Utils.Location.t;
   metadata : Types.piece_metadata;
 }
+(* AF: The record [{color; piece_types; location; metadata}] represents a piece
+   of type [piece_type] and color [color] at the location represented by
+   [location] on a chess board. [metadata] contains information about the
+   piece's point value, as well as how to determine what moves are valid for
+   it. *)
+(* RI: [metadata.points] must represent the correct number of points associated
+   with the type [piece_type] for chess. Similarly, [metadata.get_valid_moves]
+   must correctly determine how a piece of type [piece_type] could move, if
+   given the correct color and location. *)
 
 (** [get_metadata piece_type] is the metadata for [piece_type]. *)
 let get_metadata = function
@@ -89,33 +98,6 @@ let start_state =
     init Pawn Black (Utils.Location.init_loc 'G' 7);
     init Pawn Black (Utils.Location.init_loc 'H' 7);
   ]
-
-(** [to_string_black piece] is the string representation of [piece], assuming
-    that the piece is Black. *)
-let to_string_black piece =
-  match piece.piece_type with
-  | Types.Pawn -> "\u{265F}"
-  | Types.Knight -> "\u{265E}"
-  | Types.Bishop -> "\u{265D}"
-  | Types.Rook -> "\u{265C}"
-  | Types.Queen -> "\u{265B}"
-  | Types.King -> "\u{265A}"
-
-(** [to_string_white piece] is the string representation of [piece], assuming
-    that the piece is White. *)
-let to_string_white piece =
-  match piece.piece_type with
-  | Types.Pawn -> "\u{2659}"
-  | Types.Knight -> "\u{2658}"
-  | Types.Bishop -> "\u{2657}"
-  | Types.Rook -> "\u{2656}"
-  | Types.Queen -> "\u{2655}"
-  | Types.King -> "\u{2654}"
-
-let to_string piece =
-  match piece.color with
-  | Types.Black -> to_string_black piece
-  | Types.White -> to_string_white piece
 
 let to_image piece bg =
   let color =

@@ -5,8 +5,6 @@ open OUnit2
 module BasicRookParams = struct
   let piece_type = Piece.Types.Rook
   let points = 5
-  let white_str_rep = "\u{2656}"
-  let black_str_rep = "\u{265C}"
 end
 
 module BasicRookTestInputs : Test_utils.PieceTestInputs = struct
@@ -14,7 +12,6 @@ module BasicRookTestInputs : Test_utils.PieceTestInputs = struct
 
   let color = Piece.Types.White
   let location = Utils.Location.init_loc 'D' 5
-  let str_rep = white_str_rep
   let board = Test_utils.empty_board
 
   let possible_moves =
@@ -42,7 +39,6 @@ module CaptureRookTestInputs : Test_utils.PieceTestInputs = struct
 
   let color = Piece.Types.Black
   let location = Utils.Location.init_loc 'E' 4
-  let str_rep = black_str_rep
   let board = Test_utils.board1
 
   let possible_moves =

@@ -1,22 +1,16 @@
 (* @author Aidan McNay (acm289) *)
 
-type color = Types.color
-(** The colors that a chess piece can be *)
-
-type piece_type = Types.piece_type
-(** The different kinds of piece that a chess piece can be *)
-
 type t
 (** The type of a chess piece *)
 
-val init : piece_type -> color -> Utils.Location.t -> t
+val init : Types.piece_type -> Types.color -> Utils.Location.t -> t
 (** [init piece_type piece_color piece_loc] is a piece of type [piece_type] and
     color [piece_color], currently at [piece_loc]. *)
 
-val get_type : t -> piece_type
+val get_type : t -> Types.piece_type
 (** [get_type piece] is the type of [piece]. *)
 
-val get_color : t -> color
+val get_color : t -> Types.color
 (** [get_color piece] is the color of [piece]. *)
 
 val get_loc : t -> Utils.Location.t
@@ -25,7 +19,7 @@ val get_loc : t -> Utils.Location.t
 val set_loc : t -> Utils.Location.t -> t
 (** [set_loc piece loc] is [piece] at [loc]. *)
 
-val set_type : t -> piece_type -> t
+val set_type : t -> Types.piece_type -> t
 (** [set_type piece piece_type] is [piece] with type [piece_type]. *)
 
 val get_points : t -> int
@@ -40,9 +34,6 @@ val piece_at_loc : t list -> Utils.Location.t -> t option
 
 val start_state : t list
 (** [start_state] is a list of the pieces on a board at the start of a game. *)
-
-val to_string : t -> string
-(** [to_string piece] is the string representation of [piece]. *)
 
 val to_image : t -> Bogue.Draw.color -> Bogue.Widget.t
 (** [to_image piece bg] is the image representation of [piece] with background
