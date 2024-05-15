@@ -29,63 +29,6 @@ type test =
     a test with name [name], indicating that [color] moving a piece from [start]
     to [finish] should have outcome [outcome]. *)
 
-(**[sample_game_history] is the move history of the game played between
-   Jan-Krzysztof Duda and Wesley So in 2019.05.17 during the Moscow Grand prix.
-   Source: https://ratings.fide.com/view_pgn.phtml?code=217748*)
-let sample_game_history =
-  [
-    "e4";
-    "e5";
-    "Nf3";
-    "Nc6";
-    "Bc4";
-    "Bc5";
-    "c3";
-    "Nf6";
-    "d3";
-    "O-O";
-    "O-O";
-    "d5";
-    "exd5";
-    "Nxd5";
-    "a4";
-    "a6";
-    "Re1";
-    "Bg4";
-    "Nbd2";
-    "Kh8";
-    "h3";
-    "Bh5";
-    "Ne4";
-    "Ba7";
-    "Ng3";
-    "Bg6";
-    "Nxe5";
-    "Nxe5";
-    "Rxe5";
-    "Nb6";
-    "Qf3";
-    "c6";
-    "Bf4";
-    "Bb8";
-    "Ree1";
-    "Nxc4";
-    "dxc4";
-    "Qh4";
-    "Ne2";
-    "Ba7";
-    "Bd6";
-    "Rfe8";
-    "Nf4";
-    "Bc2";
-    "c5";
-    "a5";
-    "Re2";
-    "Bb3";
-    "Ra3";
-    "1-0";
-  ]
-
 (** [intermediate_board] is an intermediate board state, representing a game
     part-way done. It can be viewed at
     https://lichess.org/editor/2b5/4Bpbp/7r/p1Np4/2p2P1P/5P1p/1k1P4/1B3R1K_w_-_-_0_1?color=white *)
