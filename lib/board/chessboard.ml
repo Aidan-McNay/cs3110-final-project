@@ -7,14 +7,17 @@ type t = {
   moves : Move_record.t list;
   alg_notation : string list;
 }
-
 (* AF: The record [{pieces_on_board = p; captured_by_white = w;
    captured_by_black = b; moves = m}] represents a chess board with the pieces
    in [p] on the board, with white having caputed the pieces in [w] and black
    having captured the pieces in [b]. [m] is a list of [move_record]s that have
    occured so far in the game. *)
-(* RI: The location must be a valid chess board location; [row] and [column]
-   must be between 1 and 8, inclusive. *)
+(* RI: The length of [alg_notation] and [moves] must be the same if the game
+   isn't finished. [captured_by_white] must only contain pieces of color
+   [Piece.Types.Black]. [captured_by_black] must only contain pieces of color
+   [Piece.Types.White]. [pieces_on_board] must represent a valid chess game;
+   notably, it must contain exactly one piece of type [Piece.Types.King] for
+   each color. *)
 
 let initial =
   {

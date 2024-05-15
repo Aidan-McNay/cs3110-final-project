@@ -4,9 +4,12 @@ type clicks = {
   locations : Utils.Location.t array;
   num_logged : int;
 }
-(** The type of a two-deep history of clicks. *)
+(** AF: The record [{locations; num_logged}] represents a history of
+    [num_logged] locations clicked by the users, with the locations stored in
+    [locations]. *)
 (* RI: [locations] has exactly two entries, and [num_logged] can never go above
-   2. *)
+   2. At any given time, only the first [num_logged] entries in [locations] are
+   valid. *)
 
 (** [start_clicks] is the starting state for a click history. *)
 let empty_clicks =

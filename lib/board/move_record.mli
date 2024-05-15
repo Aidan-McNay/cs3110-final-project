@@ -21,7 +21,8 @@ val gen_record :
     [captured_a_piece] is whether a piece was captured, [castled] is whether
     this piece castled, [promoted] is whether this move involved a promotion,
     [checkmate] is whether it placed the opponent in checkmate, and [en_passant]
-    is whether it was an en passant move. *)
+    is whether it was an en passant move. Requires: The provided information
+    must represent a valid move, according to the rules for chess. *)
 
 val get_piece_type : t -> Piece.Types.piece_type
 (** [get_piece record] gets the type of the piece that moved in [record]. *)
