@@ -24,10 +24,7 @@ desc: >
   It allows players to move and capture pieces just like in a standard
   game of chess. Our program keeps track of all the moves the players make.
 
-  Currently, our project is under developement. Piece movement is supported 
-  through a TUI (text user interface). Many game rules are implemented (such
-  as basic notions of which moves are valid for which pieces). Advance chess
-  rules are not yet implemented (such as notions of check, castling, en passant,
-  and promotion). A strong sense of turns is also not yet implemented; users can
-  move any piece they wish. Our work-in-progress mainly demonstrates the interactions
-  a user can take with a chess board.
+  The game is played through a GUI (graphical user interface). All game 
+  rules are implemented (such as basic notions of which moves are 
+  valid for which pieces and advanced rules such as check, castling, 
+  promotion and en passant). 
